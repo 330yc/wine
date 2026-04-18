@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>我的酒窖</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F5F0E8;
+    --parchment: #EDE5D4;
+    --gold: #B8960C;
+    --gold-light: #D4AF37;
+    --burgundy: #6B1F2A;
+    --burgundy-deep: #4A1019;
+    --ink: #1C1410;
+    --muted: #7A6E65;
+    --white-wine: #C8A84B;
+    --border: rgba(184,150,12,0.2);
+    --shadow: rgba(28,20,16,0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* Header */
+  header {
+    background: var(--burgundy-deep);
+    padding: 2rem 2.5rem;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--gold);
+  }
+  .logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.2rem;
+    font-weight: 300;
+    color: var(--gold-light);
+    letter-spacing: 0.06em;
+  }
+  .logo span { font-style: italic; color: #fff; }
+  .header-stats {
+    display: flex;
+    gap: 2rem;
+    text-align: right;
+  }
+  .stat-item { color: rgba(255,255,255,0.6); font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; }
+  .stat-num { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; color: var(--gold-light); display: block; line-height: 1; margin-bottom: 2px; }
+
+  /* Layout */
+  .main { display: grid; grid-template-columns: 340px 1fr; min-height: calc(100vh - 90px); }
+
+  /* Sidebar */
+  .sidebar {
+    background: var(--parchment);
+    border-right: 1px solid var(--border);
+    padding: 1.5rem;
+    overflow-y: auto;
+  }
+  .sidebar-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--burgundy);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* Upload zone */
+  .upload-zone {
+    border: 1.5px dashed var(--gold);
+    border-radius: 8px;
+    padding: 1.5rem 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: rgba(184,150,12,0.04);
+    position: relative;
+    margin-bottom: 1rem;
+  }
+  .upload-zone:hover { background: rgba(184,150,12,0.08); }
+  .upload-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
+  .upload-icon {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    color: var(--gold);
+    margin-bottom: 0.5rem;
+  }
+  .upload-label { font-size: 0.85rem; color: var(--muted); line-height: 1.5; }
+  .upload-label strong { color: var(--burgundy); display: block; font-size: 0.9rem; margin-bottom: 2px; }
+
+  /* Preview */
+  .preview-wrap { margin-bottom: 1rem; text-align: center; }
+  .preview-img {
+    width: 100%;
+    max-height: 220px;
+    object-fit: contain;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+  }
+
+  /* Form */
+  .form-group { margin-bottom: 0.75rem; }
+  .form-group label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.3rem;
+  }
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    padding: 0.5rem 0.7rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.875rem;
+    color: var(--ink);
+    transition: border-color 0.2s;
+  }
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    outline: none;
+    border-color: var(--gold);
+  }
+  .form-group textarea { resize: vertical; min-height: 60px; }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+
+  /* Stars rating */
+  .stars-input { display: flex; gap: 4px; }
+  .star-btn {
+    background: none; border: none; cursor: pointer;
+    font-size: 1.2rem; color: #ccc; transition: color 0.15s; padding: 0;
+  }
+  .star-btn.active { color: var(--gold); }
+
+  /* Buttons */
+  .btn-analyze {
+    width: 100%;
+    padding: 0.65rem;
+    background: var(--burgundy);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.03em;
+  }
+  .btn-analyze:hover:not(:disabled) { background: var(--burgundy-deep); }
+  .btn-analyze:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .btn-save {
+    width: 100%;
+    padding: 0.65rem;
+    background: var(--gold);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+    letter-spacing: 0.03em;
+  }
+  .btn-save:hover:not(:disabled) { background: var(--gold-light); }
+  .btn-save:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .analyzing-bar {
+    text-align: center;
+    padding: 0.75rem;
+    font-size: 0.8rem;
+    color: var(--muted);
+    display: none;
+  }
+  .dot { animation: blink 1.2s infinite; display: inline-block; }
+  .dot:nth-child(2) { animation-delay: 0.2s; }
+  .dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes blink { 0%,80%,100%{opacity:0.2} 40%{opacity:1} }
+
+  /* Cellar grid */
+  .cellar { padding: 1.5rem; overflow-y: auto; }
+  .cellar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+  }
+  .cellar-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--burgundy-deep);
+  }
+
+  /* Filter bar */
+  .filter-bar { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .filter-btn {
+    padding: 0.3rem 0.8rem;
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    background: transparent;
+    font-size: 0.78rem;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .filter-btn:hover { border-color: var(--gold); color: var(--gold); }
+  .filter-btn.active { background: var(--burgundy); border-color: var(--burgundy); color: #fff; }
+
+  /* Wine cards */
+  .wine-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .wine-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+    animation: fadeUp 0.3s ease;
+  }
+  .wine-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px var(--shadow);
+  }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+  .card-img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    background: var(--parchment);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .card-img img { width: 100%; height: 100%; object-fit: cover; }
+  .card-img-placeholder {
+    width: 100%;
+    height: 160px;
+    background: var(--parchment);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.5rem;
+    color: var(--gold);
+  }
+
+  .card-body { padding: 0.85rem; }
+  .card-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 2px;
+    line-height: 1.3;
+  }
+  .card-winery { font-size: 0.75rem; color: var(--muted); margin-bottom: 6px; }
+  .card-meta { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+
+  .badge {
+    font-size: 0.65rem;
+    padding: 2px 7px;
+    border-radius: 99px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+  }
+  .badge-red { background: #FBE9EC; color: var(--burgundy); }
+  .badge-white { background: #FBF6E3; color: #7A6200; }
+  .badge-rose { background: #FCEEF3; color: #8B3052; }
+  .badge-sparkling { background: #E8F2FB; color: #1A5F8A; }
+  .badge-year { background: var(--parchment); color: var(--muted); }
+
+  .card-rating { font-size: 0.7rem; color: var(--gold); margin-top: 4px; }
+  .card-price { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+
+  /* Empty state */
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--muted);
+  }
+  .empty-state-icon {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 3rem;
+    color: var(--gold);
+    margin-bottom: 1rem;
+    opacity: 0.4;
+  }
+  .empty-state p { font-size: 0.9rem; line-height: 1.6; }
+
+  /* Modal */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(28,20,16,0.6);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: #fff;
+    border-radius: 12px;
+    max-width: 560px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: fadeUp 0.25s ease;
+  }
+  .modal-header {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .modal-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--burgundy-deep);
+  }
+  .modal-close {
+    background: none; border: none; cursor: pointer;
+    font-size: 1.2rem; color: var(--muted); padding: 4px;
+  }
+  .modal-body { padding: 1.5rem; }
+  .modal-img {
+    width: 100%;
+    max-height: 280px;
+    object-fit: contain;
+    border-radius: 8px;
+    margin-bottom: 1.25rem;
+    border: 1px solid var(--border);
+  }
+  .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem 1.5rem; }
+  .modal-field label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); font-weight: 500; display: block; margin-bottom: 2px; }
+  .modal-field p { font-size: 0.9rem; color: var(--ink); }
+  .modal-field.full { grid-column: span 2; }
+  .modal-actions {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+  }
+  .btn-delete {
+    padding: 0.5rem 1rem;
+    border: 1px solid #fca5a5;
+    background: transparent;
+    color: #dc2626;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.15s;
+  }
+  .btn-delete:hover { background: #fef2f2; }
+
+  .toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: var(--burgundy-deep);
+    color: #fff;
+    padding: 0.75rem 1.25rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    z-index: 200;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 0.75rem 0;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">我的<span>酒窖</span></div>
+  <div class="header-stats">
+    <div class="stat-item"><span class="stat-num" id="s-total">0</span>總計</div>
+    <div class="stat-item"><span class="stat-num" id="s-red">0</span>紅酒</div>
+    <div class="stat-item"><span class="stat-num" id="s-white">0</span>白酒</div>
+  </div>
+</header>
+
+<div class="main">
+  <!-- Sidebar: add wine -->
+  <aside class="sidebar">
+    <div class="sidebar-title">新增酒款</div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:0.5rem">
+      <div>
+        <div style="font-size:0.68rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:0.3rem">正面</div>
+        <div class="upload-zone" id="uploadZone1" style="margin-bottom:0;padding:1rem 0.5rem">
+          <input type="file" accept="image/*" id="fileInput1">
+          <div class="upload-icon" style="font-size:1.4rem;margin-bottom:0.3rem">🍷</div>
+          <div class="upload-label" style="font-size:0.75rem">點擊上傳</div>
+        </div>
+        <div id="previewWrap1" style="display:none;margin-top:0.4rem">
+          <img id="previewImg1" class="preview-img" src="" alt="正面預覽" style="max-height:120px">
+        </div>
+      </div>
+      <div>
+        <div style="font-size:0.68rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:0.3rem">背面</div>
+        <div class="upload-zone" id="uploadZone2" style="margin-bottom:0;padding:1rem 0.5rem">
+          <input type="file" accept="image/*" id="fileInput2">
+          <div class="upload-icon" style="font-size:1.4rem;margin-bottom:0.3rem">📋</div>
+          <div class="upload-label" style="font-size:0.75rem">點擊上傳</div>
+        </div>
+        <div id="previewWrap2" style="display:none;margin-top:0.4rem">
+          <img id="previewImg2" class="preview-img" src="" alt="背面預覽" style="max-height:120px">
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-analyze" id="analyzeBtn" disabled>✦ AI 辨識酒標</button>
+    <div class="analyzing-bar" id="analyzingBar">
+      辨識中<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>
+    </div>
+
+    <hr class="divider">
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>類型</label>
+        <select id="f-type">
+          <option value="紅酒">紅酒</option>
+          <option value="白酒">白酒</option>
+          <option value="粉紅酒">粉紅酒</option>
+          <option value="氣泡酒">氣泡酒</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>年份</label>
+        <input type="text" id="f-vintage" placeholder="2019">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>酒名</label>
+      <input type="text" id="f-name" placeholder="Ludi">
+    </div>
+    <div class="form-group">
+      <label>酒莊</label>
+      <input type="text" id="f-winery" placeholder="Velenosi">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>國家</label>
+        <input type="text" id="f-country" placeholder="義大利">
+      </div>
+      <div class="form-group">
+        <label>酒精度</label>
+        <input type="text" id="f-alcohol" placeholder="14.5%">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>產區</label>
+      <input type="text" id="f-region" placeholder="Offida DOCG">
+    </div>
+    <div class="form-group">
+      <label>葡萄品種</label>
+      <input type="text" id="f-grape" placeholder="Montepulciano、Merlot">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>參考價格（NT$）</label>
+        <input type="text" id="f-price" placeholder="1800">
+      </div>
+      <div class="form-group">
+        <label>開瓶日期</label>
+        <input type="date" id="f-opened">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>個人評分</label>
+      <div class="stars-input" id="starsInput">
+        <button class="star-btn" data-v="1">★</button>
+        <button class="star-btn" data-v="2">★</button>
+        <button class="star-btn" data-v="3">★</button>
+        <button class="star-btn" data-v="4">★</button>
+        <button class="star-btn" data-v="5">★</button>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>釀造特色 / 備注</label>
+      <textarea id="f-notes" placeholder="橡木桶陳 16 個月、純素..."></textarea>
+    </div>
+
+    <button class="btn-save" id="saveBtn">加入酒窖</button>
+  </aside>
+
+  <!-- Cellar -->
+  <section class="cellar">
+    <div class="cellar-header">
+      <div class="cellar-title">酒窖清單</div>
+      <div class="filter-bar">
+        <button class="filter-btn active" data-filter="全部">全部</button>
+        <button class="filter-btn" data-filter="紅酒">紅酒</button>
+        <button class="filter-btn" data-filter="白酒">白酒</button>
+        <button class="filter-btn" data-filter="粉紅酒">粉紅酒</button>
+        <button class="filter-btn" data-filter="氣泡酒">氣泡酒</button>
+      </div>
+    </div>
+    <div class="wine-grid" id="wineGrid">
+      <div class="empty-state" style="grid-column:1/-1">
+        <div class="empty-state-icon">🍾</div>
+        <p>酒窖尚無藏酒<br>上傳酒標開始建檔</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- Detail Modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle"></div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <img id="modalImg" class="modal-img" src="" alt="" style="display:none">
+      <div class="modal-grid" id="modalGrid"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-delete" id="deleteBtn">移除</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCwUGWS2R58Ys_aqTfSD44WqsFo3OcdLMk",
+  authDomain: "wine-60184.firebaseapp.com",
+  projectId: "wine-60184",
+  storageBucket: "wine-60184.firebasestorage.app",
+  messagingSenderId: "589747615031",
+  appId: "1:589747615031:web:d7a594db8ddc602c3096b2"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const storage = getStorage(app);
+
+let currentFile1 = null;
+let currentFile2 = null;
+let currentRating = 0;
+let currentFilter = '全部';
+let wines = [];
+let modalWineId = null;
+
+// Stars
+document.querySelectorAll('.star-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    currentRating = parseInt(btn.dataset.v);
+    updateStars();
+  });
+});
+function updateStars() {
+  document.querySelectorAll('.star-btn').forEach(b => {
+    b.classList.toggle('active', parseInt(b.dataset.v) <= currentRating);
+  });
+}
+
+// File upload - 正面
+document.getElementById('fileInput1').addEventListener('change', e => {
+  const f = e.target.files[0];
+  if (!f) return;
+  currentFile1 = f;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    document.getElementById('previewImg1').src = ev.target.result;
+    document.getElementById('previewWrap1').style.display = 'block';
+  };
+  reader.readAsDataURL(f);
+  document.getElementById('analyzeBtn').disabled = false;
+});
+
+// File upload - 背面
+document.getElementById('fileInput2').addEventListener('change', e => {
+  const f = e.target.files[0];
+  if (!f) return;
+  currentFile2 = f;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    document.getElementById('previewImg2').src = ev.target.result;
+    document.getElementById('previewWrap2').style.display = 'block';
+  };
+  reader.readAsDataURL(f);
+});
+
+// Analyze
+document.getElementById('analyzeBtn').addEventListener('click', async () => {
+  if (!currentFile1) return;
+  document.getElementById('analyzeBtn').disabled = true;
+  document.getElementById('analyzingBar').style.display = 'block';
+
+  try {
+    const content = [];
+
+    const b64_1 = await toBase64(currentFile1);
+    content.push({ type: 'image', source: { type: 'base64', media_type: currentFile1.type || 'image/jpeg', data: b64_1 } });
+
+    if (currentFile2) {
+      const b64_2 = await toBase64(currentFile2);
+      content.push({ type: 'image', source: { type: 'base64', media_type: currentFile2.type || 'image/jpeg', data: b64_2 } });
+    }
+
+    content.push({ type: 'text', text: `你是專業侍酒師。請分析這${currentFile2 ? '兩張（正面與背面）' : '張'}葡萄酒酒標，綜合所有資訊，以JSON格式回傳以下欄位。值用繁體中文（英文品名保留原文）。看不清楚填空字串。回傳純JSON不含任何其他文字。
+{"name":"酒名","winery":"酒莊","vintage":"年份如2019","type":"紅酒或白酒或粉紅酒或氣泡酒","country":"國家","region":"產區","grape":"葡萄品種","alcohol":"酒精濃度如14.5%","notes":"釀造特色一句話"}` });
+
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content }]
+      })
+    });
+    const data = await resp.json();
+    const text = data.content.map(b => b.text || '').join('');
+    const info = JSON.parse(text.replace(/```json|```/g, '').trim());
+    fillForm(info);
+    showToast('辨識完成，請確認資料');
+  } catch(e) {
+    showToast('辨識失敗，請手動填寫');
+  }
+
+  document.getElementById('analyzeBtn').disabled = false;
+  document.getElementById('analyzingBar').style.display = 'none';
+});
+
+function fillForm(info) {
+  const map = { name:'f-name', winery:'f-winery', vintage:'f-vintage', type:'f-type', country:'f-country', region:'f-region', grape:'f-grape', alcohol:'f-alcohol', notes:'f-notes' };
+  Object.entries(map).forEach(([k, id]) => {
+    const el = document.getElementById(id);
+    if (el && info[k]) el.value = info[k];
+  });
+}
+
+function toBase64(file) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = () => res(r.result.split(',')[1]);
+    r.onerror = rej;
+    r.readAsDataURL(file);
+  });
+}
+
+// Save
+document.getElementById('saveBtn').addEventListener('click', async () => {
+  const name = document.getElementById('f-name').value.trim();
+  if (!name) { showToast('請至少填入酒名'); return; }
+
+  document.getElementById('saveBtn').disabled = true;
+  document.getElementById('saveBtn').textContent = '儲存中…';
+
+  try {
+    let imageUrl = '';
+    let imagePath = '';
+
+    if (currentFile1) {
+      imagePath = `labels/${Date.now()}_${currentFile1.name}`;
+      const storageRef = ref(storage, imagePath);
+      await uploadBytes(storageRef, currentFile1);
+      imageUrl = await getDownloadURL(storageRef);
+    }
+
+    const wine = {
+      name,
+      winery: document.getElementById('f-winery').value,
+      vintage: document.getElementById('f-vintage').value,
+      type: document.getElementById('f-type').value,
+      country: document.getElementById('f-country').value,
+      region: document.getElementById('f-region').value,
+      grape: document.getElementById('f-grape').value,
+      alcohol: document.getElementById('f-alcohol').value,
+      price: document.getElementById('f-price').value,
+      opened: document.getElementById('f-opened').value,
+      rating: currentRating,
+      notes: document.getElementById('f-notes').value,
+      imageUrl,
+      imagePath,
+      createdAt: new Date().toISOString()
+    };
+
+    await addDoc(collection(db, 'wines'), wine);
+    showToast('已加入酒窖 🍷');
+    resetForm();
+    loadWines();
+  } catch(e) {
+    showToast('儲存失敗：' + e.message);
+  }
+
+  document.getElementById('saveBtn').disabled = false;
+  document.getElementById('saveBtn').textContent = '加入酒窖';
+});
+
+function resetForm() {
+  ['f-name','f-winery','f-vintage','f-country','f-region','f-grape','f-alcohol','f-price','f-notes','f-opened'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('f-type').value = '紅酒';
+  currentFile1 = null;
+  currentFile2 = null;
+  currentRating = 0;
+  updateStars();
+  document.getElementById('previewWrap1').style.display = 'none';
+  document.getElementById('previewWrap2').style.display = 'none';
+  document.getElementById('analyzeBtn').disabled = true;
+  document.getElementById('fileInput1').value = '';
+  document.getElementById('fileInput2').value = '';
+}
+
+// Load wines
+async function loadWines() {
+  const q = query(collection(db, 'wines'), orderBy('createdAt', 'desc'));
+  const snap = await getDocs(q);
+  wines = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  renderWines();
+  updateStats();
+}
+
+function renderWines() {
+  const filtered = currentFilter === '全部' ? wines : wines.filter(w => w.type === currentFilter);
+  const grid = document.getElementById('wineGrid');
+
+  if (!filtered.length) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">🍾</div><p>${currentFilter === '全部' ? '酒窖尚無藏酒<br>上傳酒標開始建檔' : '這個類型尚無藏酒'}</p></div>`;
+    return;
+  }
+
+  grid.innerHTML = filtered.map(w => {
+    const badgeClass = {'紅酒':'badge-red','白酒':'badge-white','粉紅酒':'badge-rose','氣泡酒':'badge-sparkling'}[w.type] || 'badge-red';
+    const stars = w.rating ? '★'.repeat(w.rating) + '☆'.repeat(5 - w.rating) : '';
+    const imgHtml = w.imageUrl
+      ? `<div class="card-img"><img src="${w.imageUrl}" alt="${esc(w.name)}" loading="lazy"></div>`
+      : `<div class="card-img-placeholder">🍷</div>`;
+    return `<div class="wine-card" onclick="openModal('${w.id}')">
+      ${imgHtml}
+      <div class="card-body">
+        <div class="card-name">${esc(w.name)}</div>
+        <div class="card-winery">${esc(w.winery || '')}</div>
+        <div class="card-meta">
+          <span class="badge ${badgeClass}">${esc(w.type)}</span>
+          ${w.vintage ? `<span class="badge badge-year">${esc(w.vintage)}</span>` : ''}
+        </div>
+        ${stars ? `<div class="card-rating">${stars}</div>` : ''}
+        ${w.price ? `<div class="card-price">NT$ ${esc(w.price)}</div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function updateStats() {
+  document.getElementById('s-total').textContent = wines.length;
+  document.getElementById('s-red').textContent = wines.filter(w => w.type === '紅酒').length;
+  document.getElementById('s-white').textContent = wines.filter(w => w.type === '白酒').length;
+}
+
+// Filter
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = btn.dataset.filter;
+    renderWines();
+  });
+});
+
+// Modal
+window.openModal = function(id) {
+  const w = wines.find(w => w.id === id);
+  if (!w) return;
+  modalWineId = id;
+  document.getElementById('modalTitle').textContent = w.name;
+
+  const img = document.getElementById('modalImg');
+  if (w.imageUrl) { img.src = w.imageUrl; img.style.display = 'block'; }
+  else img.style.display = 'none';
+
+  const stars = w.rating ? '★'.repeat(w.rating) + '☆'.repeat(5 - w.rating) : '—';
+  document.getElementById('modalGrid').innerHTML = `
+    ${mf('酒莊', w.winery)} ${mf('年份', w.vintage)}
+    ${mf('類型', w.type)} ${mf('國家', w.country)}
+    ${mf('產區', w.region, true)} 
+    ${mf('葡萄品種', w.grape, true)}
+    ${mf('酒精濃度', w.alcohol)} ${mf('參考價格', w.price ? 'NT$ ' + w.price : '')}
+    ${mf('個人評分', stars)} ${mf('開瓶日期', w.opened)}
+    ${mf('釀造特色', w.notes, true)}
+  `;
+  document.getElementById('modalOverlay').classList.add('open');
+};
+
+function mf(label, val, full) {
+  if (!val) return '';
+  return `<div class="modal-field${full ? ' full' : ''}"><label>${label}</label><p>${esc(val)}</p></div>`;
+}
+
+window.closeModal = function() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  modalWineId = null;
+};
+
+document.getElementById('modalOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+});
+
+document.getElementById('deleteBtn').addEventListener('click', async () => {
+  if (!modalWineId || !confirm('確定要移除這瓶酒嗎？')) return;
+  const w = wines.find(w => w.id === modalWineId);
+  try {
+    if (w.imagePath) await deleteObject(ref(storage, w.imagePath));
+    await deleteDoc(doc(db, 'wines', modalWineId));
+    closeModal();
+    loadWines();
+    showToast('已移除');
+  } catch(e) {
+    showToast('移除失敗');
+  }
+});
+
+// Toast
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+function esc(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+loadWines();
+</script>
+</body>
+</html>
