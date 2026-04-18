@@ -58,6 +58,14 @@
   /* Layout */
   .main { display: grid; grid-template-columns: 340px 1fr; min-height: calc(100vh - 90px); }
 
+  @media (max-width: 768px) {
+    .main { grid-template-columns: 1fr; }
+    header { padding: 1.25rem 1.25rem; }
+    .logo { font-size: 1.6rem; }
+    .cellar { padding: 1rem; }
+    .sidebar { border-right: none; border-bottom: 1px solid var(--border); }
+  }
+
   /* Sidebar */
   .sidebar {
     background: var(--parchment);
@@ -231,11 +239,11 @@
   .filter-btn:hover { border-color: var(--gold); color: var(--gold); }
   .filter-btn.active { background: var(--burgundy); border-color: var(--burgundy); color: #fff; }
 
-  /* Wine cards */
+  /* Wine list */
   .wine-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
     margin-top: 1rem;
   }
 
@@ -247,45 +255,59 @@
     transition: transform 0.2s, box-shadow 0.2s;
     cursor: pointer;
     animation: fadeUp 0.3s ease;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
   }
   .wine-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 24px var(--shadow);
+    transform: translateX(3px);
+    box-shadow: 0 4px 16px var(--shadow);
   }
-  @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
 
   .card-img {
-    width: 100%;
-    height: 160px;
+    width: 90px;
+    min-width: 90px;
     object-fit: cover;
     background: var(--parchment);
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
   }
   .card-img img { width: 100%; height: 100%; object-fit: cover; }
   .card-img-placeholder {
-    width: 100%;
-    height: 160px;
+    width: 90px;
+    min-width: 90px;
     background: var(--parchment);
     display: flex;
     align-items: center;
     justify-content: center;
     font-family: 'Cormorant Garamond', serif;
-    font-size: 2.5rem;
+    font-size: 2rem;
     color: var(--gold);
+    flex-shrink: 0;
   }
 
-  .card-body { padding: 0.85rem; }
+  .card-body {
+    padding: 0.85rem 1rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
+  }
   .card-name {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 1.05rem;
+    font-size: 1.1rem;
     font-weight: 600;
     color: var(--ink);
     margin-bottom: 2px;
     line-height: 1.3;
+    text-transform: capitalize;
   }
-  .card-winery { font-size: 0.75rem; color: var(--muted); margin-bottom: 6px; }
+  .card-winery { font-size: 0.78rem; color: var(--muted); margin-bottom: 6px; text-transform: capitalize; }
+  .card-region { font-size: 0.75rem; color: var(--muted); margin-top: 4px; text-transform: capitalize; }
   .card-meta { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
 
   .badge {
@@ -417,7 +439,7 @@
 <body>
 
 <header>
-  <div class="logo">我的<span>酒窖</span></div>
+  <div class="logo">My <span>Wine</span></div>
   <div class="header-stats">
     <div class="stat-item"><span class="stat-num" id="s-total">0</span>總計</div>
     <div class="stat-item"><span class="stat-num" id="s-red">0</span>紅酒</div>
@@ -514,14 +536,8 @@
       </div>
     </div>
     <div class="form-group">
-      <label>個人評分</label>
-      <div class="stars-input" id="starsInput">
-        <button class="star-btn" data-v="1">★</button>
-        <button class="star-btn" data-v="2">★</button>
-        <button class="star-btn" data-v="3">★</button>
-        <button class="star-btn" data-v="4">★</button>
-        <button class="star-btn" data-v="5">★</button>
-      </div>
+      <label>飲用心得</label>
+      <textarea id="f-tasting" placeholder="開瓶後的感受、搭餐心得..."></textarea>
     </div>
     <div class="form-group">
       <label>釀造特色 / 備注</label>
@@ -534,7 +550,7 @@
   <!-- Cellar -->
   <section class="cellar">
     <div class="cellar-header">
-      <div class="cellar-title">酒窖清單</div>
+      <div></div>
       <div class="filter-bar">
         <button class="filter-btn active" data-filter="全部">全部</button>
         <button class="filter-btn" data-filter="紅酒">紅酒</button>
@@ -592,23 +608,9 @@ const storage = getStorage(app);
 
 let currentFile1 = null;
 let currentFile2 = null;
-let currentRating = 0;
 let currentFilter = '全部';
 let wines = [];
 let modalWineId = null;
-
-// Stars
-document.querySelectorAll('.star-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    currentRating = parseInt(btn.dataset.v);
-    updateStars();
-  });
-});
-function updateStars() {
-  document.querySelectorAll('.star-btn').forEach(b => {
-    b.classList.toggle('active', parseInt(b.dataset.v) <= currentRating);
-  });
-}
 
 // File upload - 正面
 document.getElementById('fileInput1').addEventListener('change', e => {
@@ -743,7 +745,7 @@ document.getElementById('saveBtn').addEventListener('click', async () => {
       alcohol: document.getElementById('f-alcohol').value,
       price: document.getElementById('f-price').value,
       opened: document.getElementById('f-opened').value,
-      rating: currentRating,
+      tasting: document.getElementById('f-tasting').value,
       notes: document.getElementById('f-notes').value,
       imageUrl,
       imagePath,
@@ -763,14 +765,12 @@ document.getElementById('saveBtn').addEventListener('click', async () => {
 });
 
 function resetForm() {
-  ['f-name','f-winery','f-vintage','f-country','f-region','f-grape','f-alcohol','f-price','f-notes','f-opened'].forEach(id => {
+  ['f-name','f-winery','f-vintage','f-country','f-region','f-grape','f-alcohol','f-price','f-notes','f-opened','f-tasting'].forEach(id => {
     document.getElementById(id).value = '';
   });
   document.getElementById('f-type').value = '紅酒';
   currentFile1 = null;
   currentFile2 = null;
-  currentRating = 0;
-  updateStars();
   document.getElementById('previewWrap1').style.display = 'none';
   document.getElementById('previewWrap2').style.display = 'none';
   document.getElementById('analyzeBtn').disabled = true;
@@ -809,7 +809,6 @@ function renderWines() {
 
   grid.innerHTML = filtered.map(w => {
     const badgeClass = {'紅酒':'badge-red','白酒':'badge-white','粉紅酒':'badge-rose','氣泡酒':'badge-sparkling'}[w.type] || 'badge-red';
-    const stars = w.rating ? '★'.repeat(w.rating) + '☆'.repeat(5 - w.rating) : '';
     const imgHtml = w.imageUrl
       ? `<div class="card-img"><img src="${w.imageUrl}" alt="${esc(w.name)}" loading="lazy"></div>`
       : `<div class="card-img-placeholder">🍷</div>`;
@@ -823,8 +822,8 @@ function renderWines() {
           ${w.vintage ? `<span class="badge badge-year">${esc(w.vintage)}</span>` : ''}
           ${w.country ? `<span style="font-size:1rem">${countryFlag(w.country)}</span>` : ''}
         </div>
-        ${stars ? `<div class="card-rating">${stars}</div>` : ''}
-        ${w.price ? `<div class="card-price">NT$ ${esc(w.price)}</div>` : ''}
+        ${w.region ? `<div class="card-region">${esc(w.region)}</div>` : ''}
+        ${w.price ? `<div class="card-price" style="font-size:0.75rem;color:var(--muted);margin-top:4px">NT$ ${esc(w.price)}</div>` : ''}
       </div>
     </div>`;
   }).join('');
@@ -857,15 +856,15 @@ window.openModal = function(id) {
   if (w.imageUrl) { img.src = w.imageUrl; img.style.display = 'block'; }
   else img.style.display = 'none';
 
-  const stars = w.rating ? '★'.repeat(w.rating) + '☆'.repeat(5 - w.rating) : '—';
   document.getElementById('modalGrid').innerHTML = `
     ${mf('酒莊', w.winery)} ${mf('年份', w.vintage)}
     ${mf('類型', w.type)} ${mf('國家', w.country ? countryFlag(w.country) + ' ' + w.country : '')}
-    ${mf('產區', w.region, true)} 
+    ${mf('產區', w.region, true)}
     ${mf('葡萄品種', w.grape, true)}
     ${mf('酒精濃度', w.alcohol)} ${mf('參考價格', w.price ? 'NT$ ' + w.price : '')}
-    ${mf('個人評分', stars)} ${mf('開瓶日期', w.opened)}
+    ${mf('開瓶日期', w.opened)}
     ${mf('釀造特色', w.notes, true)}
+    ${mf('飲用心得', w.tasting, true)}
   `;
   document.getElementById('modalOverlay').classList.add('open');
 };
