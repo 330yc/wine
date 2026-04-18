@@ -915,7 +915,10 @@ function renderWines() {
       : `<div class="card-img-placeholder">🍷</div>`;
     const flag = w.country ? countryFlag(w.country) : '';
     return `<div class="wine-card" onclick="openModal('${w.id}')">
-      ${imgHtml}
+      <div style="display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0">
+        ${imgHtml}
+        ${w.price ? `<span class="badge badge-year" style="font-size:0.6rem">NT$ ${esc(w.price)}</span>` : ''}
+      </div>
       <div class="card-body">
         <div class="card-row1">
           <div class="card-name">${esc(titleCase(w.name))}</div>
@@ -930,7 +933,6 @@ function renderWines() {
           <div class="card-row2-cell">${esc(titleCase(w.grape || ''))}</div>
         </div>
         ${w.notes ? `<div class="card-row3">${esc(w.notes)}</div>` : ''}
-        ${w.price ? `<div style="margin-top:5px"><span class="badge badge-year">NT$ ${esc(w.price)}</span></div>` : ''}
       </div>
     </div>`;
   }).join('');
