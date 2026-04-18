@@ -401,6 +401,51 @@
   }
   .btn-delete:hover { background: #fef2f2; }
 
+  .btn-edit {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border-strong);
+    background: transparent;
+    color: var(--ink);
+    border-radius: 6px;
+    font-size: 0.82rem;
+    cursor: pointer;
+    font-family: 'Lato', sans-serif;
+    transition: all 0.15s;
+  }
+  .btn-edit:hover { background: var(--thumb-bg); }
+
+  .drunk-badge {
+    display: inline-block;
+    font-size: 0.65rem;
+    padding: 2px 8px;
+    border-radius: 99px;
+    background: #E8F2FB;
+    color: #1A5F8A;
+    font-family: 'Lato', sans-serif;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  .tab-bar {
+    display: flex;
+    gap: 0;
+    margin-bottom: 1.25rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .tab-btn {
+    padding: 0.5rem 1.25rem;
+    border: none;
+    background: none;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.85rem;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: all 0.15s;
+  }
+  .tab-btn.active { color: var(--rose-gold); border-bottom-color: var(--rose-gold); }
+
   .toast {
     position: fixed;
     bottom: 2rem;
@@ -444,6 +489,10 @@
 </header>
 
 <div class="main">
+  <div class="tab-bar">
+    <button class="tab-btn active" id="tab-stock" onclick="switchTab('stock')">庫存</button>
+    <button class="tab-btn" id="tab-drunk" onclick="switchTab('drunk')">喝過的</button>
+  </div>
   <div class="wine-grid" id="wineGrid">
     <div class="empty-state">
       <div class="empty-state-icon">🍾</div>
@@ -464,29 +513,13 @@
     </div>
     <div class="add-modal-body" style="overflow-y:auto;max-height:75vh">
 
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:0.75rem">
-        <div>
-          <div style="font-size:0.68rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:0.3rem">正面</div>
-          <div class="upload-zone" id="uploadZone1" style="margin-bottom:0;padding:1rem 0.5rem">
-            <input type="file" accept="image/*" id="fileInput1">
-            <div class="upload-icon" style="font-size:1.4rem;margin-bottom:0.3rem">🍷</div>
-            <div class="upload-label" style="font-size:0.75rem">點擊上傳</div>
-          </div>
-          <div id="previewWrap1" style="display:none;margin-top:0.4rem">
-            <img id="previewImg1" class="preview-img" src="" alt="正面預覽" style="max-height:100px;width:100%;object-fit:contain">
-          </div>
+      <div style="margin-bottom:0.75rem">
+        <div class="upload-zone" id="uploadZone1" style="margin-bottom:0.5rem">
+          <input type="file" accept="image/*" id="fileInput1" multiple>
+          <div class="upload-icon" style="font-size:1.8rem;margin-bottom:0.4rem">🍷</div>
+          <div class="upload-label" style="font-size:0.82rem">點擊上傳酒標照片（可一次選多張）</div>
         </div>
-        <div>
-          <div style="font-size:0.68rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:0.3rem">背面</div>
-          <div class="upload-zone" id="uploadZone2" style="margin-bottom:0;padding:1rem 0.5rem">
-            <input type="file" accept="image/*" id="fileInput2">
-            <div class="upload-icon" style="font-size:1.4rem;margin-bottom:0.3rem">📋</div>
-            <div class="upload-label" style="font-size:0.75rem">點擊上傳</div>
-          </div>
-          <div id="previewWrap2" style="display:none;margin-top:0.4rem">
-            <img id="previewImg2" class="preview-img" src="" alt="背面預覽" style="max-height:100px;width:100%;object-fit:contain">
-          </div>
-        </div>
+        <div id="previewStrip" style="display:none;display:flex;gap:6px;flex-wrap:wrap;margin-top:0.5rem"></div>
       </div>
 
       <button class="btn-analyze" id="analyzeBtn" disabled>✦ AI 辨識酒標</button>
@@ -567,7 +600,10 @@
   <div class="modal">
     <div class="modal-header">
       <div class="modal-title" id="modalTitle"></div>
-      <button class="modal-close" onclick="closeModal()">✕</button>
+      <div style="display:flex;align-items:center;gap:8px">
+        <button id="drunkBtn" title="標記為已飲用" style="background:none;border:none;cursor:pointer;font-size:1.2rem;color:var(--muted);padding:4px;transition:color 0.15s" onclick="toggleDrunk()">🥂</button>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
     </div>
     <div class="modal-body">
       <img id="modalImg" class="modal-img" src="" alt="" style="display:none">
@@ -575,6 +611,47 @@
     </div>
     <div class="modal-actions">
       <button class="btn-delete" id="deleteBtn">移除</button>
+      <button class="btn-edit" id="editBtn" onclick="openEditModal()">✏️ 編輯</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal-overlay" id="editModalOverlay">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-header">
+      <div class="modal-title">編輯酒款</div>
+      <button class="modal-close" onclick="closeEditModal()">✕</button>
+    </div>
+    <div class="add-modal-body" style="overflow-y:auto;max-height:75vh">
+      <div class="form-row">
+        <div class="form-group"><label>類型</label>
+          <select id="e-type">
+            <option value="紅酒">紅酒</option>
+            <option value="白酒">白酒</option>
+            <option value="粉紅酒">粉紅酒</option>
+            <option value="氣泡酒">氣泡酒</option>
+          </select>
+        </div>
+        <div class="form-group"><label>年份</label><input type="text" id="e-vintage"></div>
+      </div>
+      <div class="form-group"><label>酒名</label><input type="text" id="e-name"></div>
+      <div class="form-group"><label>酒莊</label><input type="text" id="e-winery"></div>
+      <div class="form-row">
+        <div class="form-group"><label>國家</label><input type="text" id="e-country"></div>
+        <div class="form-group"><label>酒精度</label><input type="text" id="e-alcohol"></div>
+      </div>
+      <div class="form-group"><label>產區</label><input type="text" id="e-region"></div>
+      <div class="form-group"><label>葡萄品種</label><input type="text" id="e-grape"></div>
+      <div class="form-row">
+        <div class="form-group"><label>參考價格（NT$）</label><input type="text" id="e-price"></div>
+        <div class="form-group"><label>開瓶日期</label><input type="date" id="e-opened"></div>
+      </div>
+      <div class="form-group"><label>飲用心得</label><textarea id="e-tasting"></textarea></div>
+      <div class="form-group"><label>釀造特色 / 備注</label><textarea id="e-notes"></textarea></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-save" id="updateBtn">儲存修改</button>
     </div>
   </div>
 </div>
@@ -584,7 +661,7 @@
 <!-- Firebase -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy, updateDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js";
 
 const firebaseConfig = {
@@ -600,54 +677,42 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-let currentFile1 = null;
-let currentFile2 = null;
+let currentFiles = [];
 let wines = [];
 let modalWineId = null;
+let currentTab = 'stock';
 
-// File upload - 正面
+// Multi-select file upload
 document.getElementById('fileInput1').addEventListener('change', e => {
-  const f = e.target.files[0];
-  if (!f) return;
-  currentFile1 = f;
-  const reader = new FileReader();
-  reader.onload = ev => {
-    document.getElementById('previewImg1').src = ev.target.result;
-    document.getElementById('previewWrap1').style.display = 'block';
-  };
-  reader.readAsDataURL(f);
+  const files = Array.from(e.target.files).slice(0, 3);
+  if (!files.length) return;
+  currentFiles = files;
+  const strip = document.getElementById('previewStrip');
+  strip.innerHTML = '';
+  strip.style.display = 'flex';
+  files.forEach(f => {
+    const img = document.createElement('img');
+    img.style.cssText = 'width:80px;height:110px;object-fit:cover;border-radius:4px;border:0.5px solid rgba(192,130,106,0.2)';
+    const r = new FileReader();
+    r.onload = ev => img.src = ev.target.result;
+    r.readAsDataURL(f);
+    strip.appendChild(img);
+  });
   document.getElementById('analyzeBtn').disabled = false;
-});
-
-// File upload - 背面
-document.getElementById('fileInput2').addEventListener('change', e => {
-  const f = e.target.files[0];
-  if (!f) return;
-  currentFile2 = f;
-  const reader = new FileReader();
-  reader.onload = ev => {
-    document.getElementById('previewImg2').src = ev.target.result;
-    document.getElementById('previewWrap2').style.display = 'block';
-  };
-  reader.readAsDataURL(f);
 });
 
 // Analyze
 document.getElementById('analyzeBtn').addEventListener('click', async () => {
-  if (!currentFile1) return;
+  if (!currentFiles.length) return;
   document.getElementById('analyzeBtn').disabled = true;
   document.getElementById('analyzingBar').style.display = 'block';
 
   try {
-    console.log('開始辨識...');
     const images = [];
-    const b64_1 = await compressImage(currentFile1);
-    images.push({ mime_type: 'image/jpeg', data: b64_1 });
-    if (currentFile2) {
-      const b64_2 = await compressImage(currentFile2);
-      images.push({ mime_type: 'image/jpeg', data: b64_2 });
+    for (const f of currentFiles) {
+      const b64 = await compressImage(f);
+      images.push({ mime_type: 'image/jpeg', data: b64 });
     }
-    console.log('照片準備好，呼叫 Worker...');
 
     const resp = await fetch('https://wine.u8934039.workers.dev', {
       method: 'POST',
@@ -720,10 +785,11 @@ document.getElementById('saveBtn').addEventListener('click', async () => {
     let imageUrl = '';
     let imagePath = '';
 
-    if (currentFile1) {
-      imagePath = `labels/${Date.now()}_${currentFile1.name}`;
+    if (currentFiles.length) {
+      const f = currentFiles[0];
+      imagePath = `labels/${Date.now()}_${f.name}`;
       const storageRef = ref(storage, imagePath);
-      await uploadBytes(storageRef, currentFile1);
+      await uploadBytes(storageRef, f);
       imageUrl = await getDownloadURL(storageRef);
     }
 
@@ -740,6 +806,7 @@ document.getElementById('saveBtn').addEventListener('click', async () => {
       opened: document.getElementById('f-opened').value,
       tasting: document.getElementById('f-tasting').value,
       notes: document.getElementById('f-notes').value,
+      drunk: false,
       imageUrl,
       imagePath,
       createdAt: new Date().toISOString()
@@ -763,13 +830,11 @@ function resetForm() {
     document.getElementById(id).value = '';
   });
   document.getElementById('f-type').value = '紅酒';
-  currentFile1 = null;
-  currentFile2 = null;
-  document.getElementById('previewWrap1').style.display = 'none';
-  document.getElementById('previewWrap2').style.display = 'none';
+  currentFiles = [];
+  document.getElementById('previewStrip').innerHTML = '';
+  document.getElementById('previewStrip').style.display = 'none';
   document.getElementById('analyzeBtn').disabled = true;
   document.getElementById('fileInput1').value = '';
-  document.getElementById('fileInput2').value = '';
 }
 
 // Load wines
@@ -796,20 +861,29 @@ function countryFlag(country) {
   return map[country] || '🌍';
 }
 
+function switchTab(tab) {
+  currentTab = tab;
+  document.getElementById('tab-stock').classList.toggle('active', tab === 'stock');
+  document.getElementById('tab-drunk').classList.toggle('active', tab === 'drunk');
+  renderWines();
+}
+
 function renderWines() {
   const grid = document.getElementById('wineGrid');
+  const filtered = wines.filter(w => currentTab === 'drunk' ? w.drunk : !w.drunk);
 
-  if (!wines.length) {
-    grid.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🍾</div><p>酒窖尚無藏酒<br>點右下角 ＋ 開始建檔</p></div>`;
+  if (!filtered.length) {
+    const msg = currentTab === 'drunk' ? '還沒有喝過的記錄' : '酒窖尚無藏酒<br>點右下角 ＋ 開始建檔';
+    grid.innerHTML = `<div class="empty-state"><div class="empty-state-icon">${currentTab === 'drunk' ? '🥂' : '🍾'}</div><p>${msg}</p></div>`;
     return;
   }
 
-  grid.innerHTML = wines.map(w => {
+  grid.innerHTML = filtered.map(w => {
     const badgeClass = {'紅酒':'badge-red','白酒':'badge-white','粉紅酒':'badge-rose','氣泡酒':'badge-sparkling'}[w.type] || 'badge-red';
     const imgHtml = w.imageUrl
       ? `<div class="card-img"><img src="${w.imageUrl}" alt="${esc(w.name)}" loading="lazy"></div>`
       : `<div class="card-img-placeholder">🍷</div>`;
-    const flag = countryFlag(w.country);
+    const flag = w.country ? countryFlag(w.country) : '';
     return `<div class="wine-card" onclick="openModal('${w.id}')">
       ${imgHtml}
       <div class="card-body">
@@ -820,12 +894,13 @@ function renderWines() {
           ${w.alcohol ? `<span class="badge badge-alc">${esc(w.alcohol)}</span>` : ''}
         </div>
         <div class="card-row2">
-          <div class="flag-circle">${w.country ? flag : '🍷'}</div>
+          <div style="font-size:16px;line-height:1">${flag}</div>
           <div class="card-row2-first">${esc(titleCase(w.winery || ''))}</div>
           <div class="card-row2-cell">${esc(titleCase(w.region || ''))}</div>
           <div class="card-row2-cell">${esc(titleCase(w.grape || ''))}</div>
         </div>
         ${w.notes ? `<div class="card-row3">${esc(w.notes)}</div>` : ''}
+        ${w.price ? `<div style="margin-top:5px"><span class="badge badge-year">NT$ ${esc(w.price)}</span></div>` : ''}
       </div>
     </div>`;
   }).join('');
@@ -847,17 +922,21 @@ window.openModal = function(id) {
   const w = wines.find(w => w.id === id);
   if (!w) return;
   modalWineId = id;
-  document.getElementById('modalTitle').textContent = w.name;
+  document.getElementById('modalTitle').textContent = titleCase(w.name);
 
   const img = document.getElementById('modalImg');
   if (w.imageUrl) { img.src = w.imageUrl; img.style.display = 'block'; }
   else img.style.display = 'none';
 
+  const drunkBtn = document.getElementById('drunkBtn');
+  drunkBtn.style.color = w.drunk ? '#C0826A' : 'var(--muted)';
+  drunkBtn.title = w.drunk ? '取消飲用標記' : '標記為已飲用';
+
   document.getElementById('modalGrid').innerHTML = `
-    ${mf('酒莊', w.winery)} ${mf('年份', w.vintage)}
+    ${mf('酒莊', titleCase(w.winery))} ${mf('年份', w.vintage)}
     ${mf('類型', w.type)} ${mf('國家', w.country ? countryFlag(w.country) + ' ' + w.country : '')}
-    ${mf('產區', w.region, true)}
-    ${mf('葡萄品種', w.grape, true)}
+    ${mf('產區', titleCase(w.region), true)}
+    ${mf('葡萄品種', titleCase(w.grape), true)}
     ${mf('酒精濃度', w.alcohol)} ${mf('參考價格', w.price ? 'NT$ ' + w.price : '')}
     ${mf('開瓶日期', w.opened)}
     ${mf('釀造特色', w.notes, true)}
@@ -880,6 +959,77 @@ document.getElementById('modalOverlay').addEventListener('click', e => {
   if (e.target === document.getElementById('modalOverlay')) closeModal();
 });
 
+// Toggle drunk
+window.toggleDrunk = async function() {
+  if (!modalWineId) return;
+  const w = wines.find(w => w.id === modalWineId);
+  if (!w) return;
+  try {
+    await updateDoc(doc(db, 'wines', modalWineId), { drunk: !w.drunk });
+    w.drunk = !w.drunk;
+    const drunkBtn = document.getElementById('drunkBtn');
+    drunkBtn.style.color = w.drunk ? '#C0826A' : 'var(--muted)';
+    drunkBtn.title = w.drunk ? '取消飲用標記' : '標記為已飲用';
+    showToast(w.drunk ? '已標記為喝過的 🥂' : '已移回庫存');
+    renderWines();
+  } catch(e) { showToast('更新失敗'); }
+};
+
+// Edit modal
+window.openEditModal = function() {
+  const w = wines.find(w => w.id === modalWineId);
+  if (!w) return;
+  const fields = {
+    'e-name': w.name, 'e-winery': w.winery, 'e-vintage': w.vintage,
+    'e-country': w.country, 'e-region': w.region, 'e-grape': w.grape,
+    'e-alcohol': w.alcohol, 'e-price': w.price, 'e-opened': w.opened,
+    'e-tasting': w.tasting, 'e-notes': w.notes
+  };
+  Object.entries(fields).forEach(([id, val]) => {
+    const el = document.getElementById(id);
+    if (el) el.value = val || '';
+  });
+  document.getElementById('e-type').value = w.type || '紅酒';
+  closeModal();
+  document.getElementById('editModalOverlay').classList.add('open');
+};
+
+window.closeEditModal = function() {
+  document.getElementById('editModalOverlay').classList.remove('open');
+};
+
+document.getElementById('editModalOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('editModalOverlay')) closeEditModal();
+});
+
+document.getElementById('updateBtn').addEventListener('click', async () => {
+  if (!modalWineId) return;
+  document.getElementById('updateBtn').disabled = true;
+  document.getElementById('updateBtn').textContent = '儲存中…';
+  try {
+    const updates = {
+      name: document.getElementById('e-name').value,
+      winery: document.getElementById('e-winery').value,
+      vintage: document.getElementById('e-vintage').value,
+      type: document.getElementById('e-type').value,
+      country: document.getElementById('e-country').value,
+      region: document.getElementById('e-region').value,
+      grape: document.getElementById('e-grape').value,
+      alcohol: document.getElementById('e-alcohol').value,
+      price: document.getElementById('e-price').value,
+      opened: document.getElementById('e-opened').value,
+      tasting: document.getElementById('e-tasting').value,
+      notes: document.getElementById('e-notes').value,
+    };
+    await updateDoc(doc(db, 'wines', modalWineId), updates);
+    showToast('已儲存');
+    closeEditModal();
+    loadWines();
+  } catch(e) { showToast('儲存失敗'); }
+  document.getElementById('updateBtn').disabled = false;
+  document.getElementById('updateBtn').textContent = '儲存修改';
+});
+
 document.getElementById('deleteBtn').addEventListener('click', async () => {
   if (!modalWineId || !confirm('確定要移除這瓶酒嗎？')) return;
   const w = wines.find(w => w.id === modalWineId);
@@ -889,9 +1039,7 @@ document.getElementById('deleteBtn').addEventListener('click', async () => {
     closeModal();
     loadWines();
     showToast('已移除');
-  } catch(e) {
-    showToast('移除失敗');
-  }
+  } catch(e) { showToast('移除失敗'); }
 });
 
 // Toast
