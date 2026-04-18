@@ -644,31 +644,21 @@ document.getElementById('analyzeBtn').addEventListener('click', async () => {
   document.getElementById('analyzingBar').style.display = 'block';
 
   try {
-    const content = [];
-
+    const images = [];
     const b64_1 = await toBase64(currentFile1);
-    content.push({ type: 'image', source: { type: 'base64', media_type: currentFile1.type || 'image/jpeg', data: b64_1 } });
-
+    images.push({ mime_type: currentFile1.type || 'image/jpeg', data: b64_1 });
     if (currentFile2) {
       const b64_2 = await toBase64(currentFile2);
-      content.push({ type: 'image', source: { type: 'base64', media_type: currentFile2.type || 'image/jpeg', data: b64_2 } });
+      images.push({ mime_type: currentFile2.type || 'image/jpeg', data: b64_2 });
     }
 
-    content.push({ type: 'text', text: `你是專業侍酒師。請分析這${currentFile2 ? '兩張（正面與背面）' : '張'}葡萄酒酒標，綜合所有資訊，以JSON格式回傳以下欄位。值用繁體中文（英文品名保留原文）。看不清楚填空字串。回傳純JSON不含任何其他文字。
-{"name":"酒名","winery":"酒莊","vintage":"年份如2019","type":"紅酒或白酒或粉紅酒或氣泡酒","country":"國家","region":"產區","grape":"葡萄品種","alcohol":"酒精濃度如14.5%","notes":"釀造特色一句話"}` });
-
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    const resp = await fetch('https://wine.u8934039.workers.dev', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        messages: [{ role: 'user', content }]
-      })
+      body: JSON.stringify({ images })
     });
-    const data = await resp.json();
-    const text = data.content.map(b => b.text || '').join('');
-    const info = JSON.parse(text.replace(/```json|```/g, '').trim());
+
+    const info = await resp.json();
     fillForm(info);
     showToast('辨識完成，請確認資料');
   } catch(e) {
