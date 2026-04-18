@@ -199,78 +199,117 @@
   .wine-grid {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0;
     margin-top: 0;
   }
 
   .wine-card {
-    background: #fff;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    overflow: hidden;
-    transition: transform 0.2s, box-shadow 0.2s;
-    cursor: pointer;
-    animation: fadeUp 0.3s ease;
     display: flex;
-    flex-direction: row;
-    align-items: stretch;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 14px 0;
+    border-bottom: 0.5px solid var(--border);
+    cursor: pointer;
+    transition: background 0.15s;
   }
-  .wine-card:hover {
-    transform: translateX(3px);
-    box-shadow: 0 4px 16px var(--shadow);
+  .wine-card:first-child { border-top: 0.5px solid var(--border); }
+  .wine-card:hover { background: #FDF9F6; margin: 0 -2rem; padding: 14px 2rem; }
+  @media (max-width: 768px) {
+    .wine-card:hover { margin: 0 -1rem; padding: 14px 1rem; }
   }
   @keyframes fadeUp { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
 
   .card-img {
-    width: 90px;
-    min-width: 90px;
-    object-fit: cover;
+    width: 64px;
+    min-width: 64px;
+    height: 88px;
     background: var(--thumb-bg);
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    border-radius: 4px;
+    overflow: hidden;
   }
   .card-img img { width: 100%; height: 100%; object-fit: cover; }
   .card-img-placeholder {
-    width: 90px;
-    min-width: 90px;
+    width: 64px;
+    min-width: 64px;
+    height: 88px;
     background: var(--thumb-bg);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2rem;
-    color: var(--rose-gold);
+    font-size: 1.8rem;
     flex-shrink: 0;
+    border-radius: 4px;
   }
 
   .card-body {
-    padding: 0.85rem 1rem;
+    padding: 0.75rem 1rem;
     flex: 1;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    gap: 6px;
     min-width: 0;
+  }
+  .card-row1 {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) auto auto auto;
+    align-items: center;
+    gap: 6px;
   }
   .card-name {
     font-family: 'Playfair Display', serif;
-    font-size: 1.05rem;
+    font-size: 1rem;
     font-weight: 600;
     font-style: italic;
     color: var(--ink);
-    margin-bottom: 2px;
     line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
-  .card-winery { font-size: 0.78rem; color: var(--muted); margin-bottom: 6px; font-family: 'Lato', sans-serif; }
-  .card-region { font-size: 0.75rem; color: var(--muted); margin-top: 4px; font-family: 'Lato', sans-serif; }
-  .card-meta { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .card-row2 {
+    display: grid;
+    grid-template-columns: 20px minmax(0, 1.2fr) minmax(0, 1.8fr) minmax(0, 2fr);
+    align-items: center;
+    gap: 0;
+  }
+  .flag-circle {
+    width: 20px; height: 20px; border-radius: 50%;
+    background: var(--thumb-bg);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 13px; overflow: hidden;
+    border: 0.5px solid var(--border);
+    flex-shrink: 0;
+  }
+  .card-row2-first {
+    font-size: 0.73rem; color: var(--muted);
+    padding-left: 8px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    font-family: 'Lato', sans-serif;
+  }
+  .card-row2-cell {
+    font-size: 0.73rem; color: var(--muted);
+    padding-left: 10px;
+    border-left: 1px solid var(--border-strong);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    font-family: 'Lato', sans-serif;
+  }
+  .card-row3 {
+    font-size: 0.72rem;
+    color: #BB9F90;
+    line-height: 1.5;
+    font-family: 'Lato', sans-serif;
+  }
 
   .badge {
-    font-size: 0.65rem;
-    padding: 2px 7px;
+    font-size: 0.62rem;
+    padding: 2px 8px;
     border-radius: 99px;
     font-weight: 500;
-    letter-spacing: 0.04em;
+    white-space: nowrap;
     font-family: 'Lato', sans-serif;
   }
   .badge-red { background: #FCEEE9; color: #A0522D; }
@@ -278,6 +317,7 @@
   .badge-rose { background: #FCEEF3; color: #8B3052; }
   .badge-sparkling { background: #E8F2FB; color: #1A5F8A; }
   .badge-year { background: var(--thumb-bg); color: var(--muted); }
+  .badge-alc { background: #F0EBF8; color: #7A5A9A; }
 
   /* Empty state */
   .empty-state {
@@ -740,6 +780,11 @@ async function loadWines() {
   renderWines();
 }
 
+function titleCase(str) {
+  if (!str) return '';
+  return str.toLowerCase().replace(/(?:^|\s|[-\/·、])\S/g, c => c.toUpperCase());
+}
+
 function countryFlag(country) {
   const map = {
     '義大利':'🇮🇹','法國':'🇫🇷','美國':'🇺🇸','西班牙':'🇪🇸','德國':'🇩🇪',
@@ -764,18 +809,23 @@ function renderWines() {
     const imgHtml = w.imageUrl
       ? `<div class="card-img"><img src="${w.imageUrl}" alt="${esc(w.name)}" loading="lazy"></div>`
       : `<div class="card-img-placeholder">🍷</div>`;
+    const flag = countryFlag(w.country);
     return `<div class="wine-card" onclick="openModal('${w.id}')">
       ${imgHtml}
       <div class="card-body">
-        <div class="card-name">${esc(w.name)}</div>
-        <div class="card-winery">${esc(w.winery || '')}</div>
-        <div class="card-meta">
+        <div class="card-row1">
+          <div class="card-name">${esc(titleCase(w.name))}</div>
           <span class="badge ${badgeClass}">${esc(w.type)}</span>
           ${w.vintage ? `<span class="badge badge-year">${esc(w.vintage)}</span>` : ''}
-          ${w.country ? `<span style="font-size:1rem">${countryFlag(w.country)}</span>` : ''}
+          ${w.alcohol ? `<span class="badge badge-alc">${esc(w.alcohol)}</span>` : ''}
         </div>
-        ${w.region ? `<div class="card-region">${esc(w.region)}</div>` : ''}
-        ${w.price ? `<div class="card-price" style="font-size:0.75rem;color:var(--muted);margin-top:4px;font-family:'Lato',sans-serif">NT$ ${esc(w.price)}</div>` : ''}
+        <div class="card-row2">
+          <div class="flag-circle">${w.country ? flag : '🍷'}</div>
+          <div class="card-row2-first">${esc(titleCase(w.winery || ''))}</div>
+          <div class="card-row2-cell">${esc(titleCase(w.region || ''))}</div>
+          <div class="card-row2-cell">${esc(titleCase(w.grape || ''))}</div>
+        </div>
+        ${w.notes ? `<div class="card-row3">${esc(w.notes)}</div>` : ''}
       </div>
     </div>`;
   }).join('');
