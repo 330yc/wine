@@ -787,6 +787,17 @@ async function loadWines() {
   updateStats();
 }
 
+function countryFlag(country) {
+  const map = {
+    '義大利':'🇮🇹','法國':'🇫🇷','美國':'🇺🇸','西班牙':'🇪🇸','德國':'🇩🇪',
+    '澳洲':'🇦🇺','智利':'🇨🇱','阿根廷':'🇦🇷','紐西蘭':'🇳🇿','南非':'🇿🇦',
+    '葡萄牙':'🇵🇹','奧地利':'🇦🇹','希臘':'🇬🇷','匈牙利':'🇭🇺','日本':'🇯🇵',
+    '台灣':'🇹🇼','中國':'🇨🇳','英國':'🇬🇧','加拿大':'🇨🇦','以色列':'🇮🇱',
+    '黎巴嫩':'🇱🇧','喬治亞':'🇬🇪','克羅埃西亞':'🇭🇷','斯洛維尼亞':'🇸🇮',
+  };
+  return map[country] || '🌍';
+}
+
 function renderWines() {
   const filtered = currentFilter === '全部' ? wines : wines.filter(w => w.type === currentFilter);
   const grid = document.getElementById('wineGrid');
@@ -810,6 +821,7 @@ function renderWines() {
         <div class="card-meta">
           <span class="badge ${badgeClass}">${esc(w.type)}</span>
           ${w.vintage ? `<span class="badge badge-year">${esc(w.vintage)}</span>` : ''}
+          ${w.country ? `<span style="font-size:1rem">${countryFlag(w.country)}</span>` : ''}
         </div>
         ${stars ? `<div class="card-rating">${stars}</div>` : ''}
         ${w.price ? `<div class="card-price">NT$ ${esc(w.price)}</div>` : ''}
@@ -848,7 +860,7 @@ window.openModal = function(id) {
   const stars = w.rating ? '★'.repeat(w.rating) + '☆'.repeat(5 - w.rating) : '—';
   document.getElementById('modalGrid').innerHTML = `
     ${mf('酒莊', w.winery)} ${mf('年份', w.vintage)}
-    ${mf('類型', w.type)} ${mf('國家', w.country)}
+    ${mf('類型', w.type)} ${mf('國家', w.country ? countryFlag(w.country) + ' ' + w.country : '')}
     ${mf('產區', w.region, true)} 
     ${mf('葡萄品種', w.grape, true)}
     ${mf('酒精濃度', w.alcohol)} ${mf('參考價格', w.price ? 'NT$ ' + w.price : '')}
