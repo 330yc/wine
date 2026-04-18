@@ -3,64 +3,56 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>我的酒窖</title>
+<title>My Wine</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,400;1,600&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --cream: #F5F0E8;
-    --parchment: #EDE5D4;
-    --gold: #B8960C;
-    --gold-light: #D4AF37;
-    --burgundy: #6B1F2A;
-    --burgundy-deep: #4A1019;
-    --ink: #1C1410;
-    --muted: #7A6E65;
-    --white-wine: #C8A84B;
-    --border: rgba(184,150,12,0.2);
-    --shadow: rgba(28,20,16,0.08);
+    --header-bg: #FAF6F0;
+    --body-bg: #FFFFFF;
+    --rose-gold: #C0826A;
+    --ink: #3A2E28;
+    --muted: #AA9080;
+    --border: rgba(192,130,106,0.15);
+    --border-strong: rgba(192,130,106,0.25);
+    --shadow: rgba(58,46,40,0.06);
+    --card-bg: #FFFFFF;
+    --thumb-bg: #F5EDE4;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--cream);
+    font-family: 'Lato', sans-serif;
+    background: var(--body-bg);
     color: var(--ink);
     min-height: 100vh;
   }
 
   /* Header */
   header {
-    background: var(--burgundy-deep);
-    padding: 2rem 2.5rem;
+    background: var(--header-bg);
+    padding: 1.5rem 2rem;
     display: flex;
-    align-items: flex-end;
+    align-items: center;
     justify-content: space-between;
-    border-bottom: 1px solid var(--gold);
+    border-bottom: 1px solid var(--border-strong);
   }
   .logo {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 2.2rem;
-    font-weight: 300;
-    color: var(--gold-light);
-    letter-spacing: 0.06em;
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 600;
+    font-style: italic;
+    color: var(--rose-gold);
+    letter-spacing: 0.02em;
   }
-  .logo span { font-style: italic; color: #fff; }
-  .header-stats {
-    display: flex;
-    gap: 2rem;
-    text-align: right;
-  }
-  .stat-item { color: rgba(255,255,255,0.6); font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; }
-  .stat-num { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; color: var(--gold-light); display: block; line-height: 1; margin-bottom: 2px; }
 
   /* Layout */
-  .main { padding: 1.5rem 2rem; min-height: calc(100vh - 90px); }
+  .main { padding: 1.5rem 2rem; min-height: calc(100vh - 80px); background: #fff; }
 
   @media (max-width: 768px) {
     header { padding: 1.25rem; }
-    .logo { font-size: 1.6rem; }
+    .logo { font-size: 1.5rem; }
     .main { padding: 1rem; }
   }
 
@@ -72,12 +64,12 @@
     width: 52px;
     height: 52px;
     border-radius: 50%;
-    background: var(--burgundy);
+    background: var(--rose-gold);
     border: none;
     color: #fff;
     font-size: 1.6rem;
     cursor: pointer;
-    box-shadow: 0 4px 16px rgba(74,16,25,0.35);
+    box-shadow: 0 4px 16px rgba(192,130,106,0.4);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -85,33 +77,31 @@
     z-index: 50;
     line-height: 1;
   }
-  .fab:hover { background: var(--burgundy-deep); transform: scale(1.08); }
+  .fab:hover { background: #A86E58; transform: scale(1.08); }
 
   /* Add wine modal form styles */
   .add-modal-body { padding: 1.25rem 1.5rem; }
 
   /* Upload zone */
   .upload-zone {
-    border: 1.5px dashed var(--gold);
+    border: 1.5px dashed var(--border-strong);
     border-radius: 8px;
     padding: 1.5rem 1rem;
     text-align: center;
     cursor: pointer;
     transition: all 0.2s;
-    background: rgba(184,150,12,0.04);
+    background: var(--thumb-bg);
     position: relative;
     margin-bottom: 1rem;
   }
-  .upload-zone:hover { background: rgba(184,150,12,0.08); }
+  .upload-zone:hover { background: #EEE0D5; }
   .upload-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
   .upload-icon {
-    font-family: 'Cormorant Garamond', serif;
     font-size: 2rem;
-    color: var(--gold);
+    color: var(--rose-gold);
     margin-bottom: 0.5rem;
   }
   .upload-label { font-size: 0.85rem; color: var(--muted); line-height: 1.5; }
-  .upload-label strong { color: var(--burgundy); display: block; font-size: 0.9rem; margin-bottom: 2px; }
 
   /* Preview */
   .preview-wrap { margin-bottom: 1rem; text-align: center; }
@@ -139,10 +129,10 @@
   .form-group textarea {
     width: 100%;
     padding: 0.5rem 0.7rem;
-    border: 1px solid var(--border);
+    border: 1px solid var(--border-strong);
     border-radius: 6px;
     background: #fff;
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Lato', sans-serif;
     font-size: 0.875rem;
     color: var(--ink);
     transition: border-color 0.2s;
@@ -151,54 +141,46 @@
   .form-group select:focus,
   .form-group textarea:focus {
     outline: none;
-    border-color: var(--gold);
+    border-color: var(--rose-gold);
   }
   .form-group textarea { resize: vertical; min-height: 60px; }
 
   .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
 
-  /* Stars rating */
-  .stars-input { display: flex; gap: 4px; }
-  .star-btn {
-    background: none; border: none; cursor: pointer;
-    font-size: 1.2rem; color: #ccc; transition: color 0.15s; padding: 0;
-  }
-  .star-btn.active { color: var(--gold); }
-
   /* Buttons */
   .btn-analyze {
     width: 100%;
     padding: 0.65rem;
-    background: var(--burgundy);
-    color: #fff;
-    border: none;
+    background: var(--thumb-bg);
+    color: var(--rose-gold);
+    border: 1px solid var(--border-strong);
     border-radius: 6px;
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Lato', sans-serif;
     font-size: 0.85rem;
-    font-weight: 500;
+    font-weight: 400;
     cursor: pointer;
     transition: background 0.2s;
     margin-bottom: 0.5rem;
     letter-spacing: 0.03em;
   }
-  .btn-analyze:hover:not(:disabled) { background: var(--burgundy-deep); }
-  .btn-analyze:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-analyze:hover:not(:disabled) { background: #EEE0D5; }
+  .btn-analyze:disabled { opacity: 0.4; cursor: not-allowed; }
 
   .btn-save {
     width: 100%;
     padding: 0.65rem;
-    background: var(--gold);
+    background: var(--rose-gold);
     color: #fff;
     border: none;
     border-radius: 6px;
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Lato', sans-serif;
     font-size: 0.85rem;
-    font-weight: 500;
+    font-weight: 400;
     cursor: pointer;
     transition: background 0.2s;
     letter-spacing: 0.03em;
   }
-  .btn-save:hover:not(:disabled) { background: var(--gold-light); }
+  .btn-save:hover:not(:disabled) { background: #A86E58; }
   .btn-save:disabled { opacity: 0.5; cursor: not-allowed; }
 
   .analyzing-bar {
@@ -213,43 +195,12 @@
   .dot:nth-child(3) { animation-delay: 0.4s; }
   @keyframes blink { 0%,80%,100%{opacity:0.2} 40%{opacity:1} }
 
-  /* Cellar grid */
-  .cellar { padding: 1.5rem; overflow-y: auto; }
-  .cellar-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 1.25rem;
-  }
-  .cellar-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.4rem;
-    font-weight: 600;
-    color: var(--burgundy-deep);
-  }
-
-  /* Filter bar */
-  .filter-bar { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-  .filter-btn {
-    padding: 0.3rem 0.8rem;
-    border: 1px solid var(--border);
-    border-radius: 99px;
-    background: transparent;
-    font-size: 0.78rem;
-    color: var(--muted);
-    cursor: pointer;
-    transition: all 0.15s;
-    font-family: 'DM Sans', sans-serif;
-  }
-  .filter-btn:hover { border-color: var(--gold); color: var(--gold); }
-  .filter-btn.active { background: var(--burgundy); border-color: var(--burgundy); color: #fff; }
-
   /* Wine list */
   .wine-grid {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-    margin-top: 1rem;
+    margin-top: 0;
   }
 
   .wine-card {
@@ -274,7 +225,7 @@
     width: 90px;
     min-width: 90px;
     object-fit: cover;
-    background: var(--parchment);
+    background: var(--thumb-bg);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -284,13 +235,12 @@
   .card-img-placeholder {
     width: 90px;
     min-width: 90px;
-    background: var(--parchment);
+    background: var(--thumb-bg);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: 'Cormorant Garamond', serif;
     font-size: 2rem;
-    color: var(--gold);
+    color: var(--rose-gold);
     flex-shrink: 0;
   }
 
@@ -303,16 +253,16 @@
     min-width: 0;
   }
   .card-name {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.1rem;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem;
     font-weight: 600;
+    font-style: italic;
     color: var(--ink);
     margin-bottom: 2px;
     line-height: 1.3;
-    text-transform: capitalize;
   }
-  .card-winery { font-size: 0.78rem; color: var(--muted); margin-bottom: 6px; text-transform: capitalize; }
-  .card-region { font-size: 0.75rem; color: var(--muted); margin-top: 4px; text-transform: capitalize; }
+  .card-winery { font-size: 0.78rem; color: var(--muted); margin-bottom: 6px; font-family: 'Lato', sans-serif; }
+  .card-region { font-size: 0.75rem; color: var(--muted); margin-top: 4px; font-family: 'Lato', sans-serif; }
   .card-meta { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
 
   .badge {
@@ -321,15 +271,13 @@
     border-radius: 99px;
     font-weight: 500;
     letter-spacing: 0.04em;
+    font-family: 'Lato', sans-serif;
   }
-  .badge-red { background: #FBE9EC; color: var(--burgundy); }
+  .badge-red { background: #FCEEE9; color: #A0522D; }
   .badge-white { background: #FBF6E3; color: #7A6200; }
   .badge-rose { background: #FCEEF3; color: #8B3052; }
   .badge-sparkling { background: #E8F2FB; color: #1A5F8A; }
-  .badge-year { background: var(--parchment); color: var(--muted); }
-
-  .card-rating { font-size: 0.7rem; color: var(--gold); margin-top: 4px; }
-  .card-price { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+  .badge-year { background: var(--thumb-bg); color: var(--muted); }
 
   /* Empty state */
   .empty-state {
@@ -337,21 +285,15 @@
     padding: 4rem 2rem;
     color: var(--muted);
   }
-  .empty-state-icon {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 3rem;
-    color: var(--gold);
-    margin-bottom: 1rem;
-    opacity: 0.4;
-  }
-  .empty-state p { font-size: 0.9rem; line-height: 1.6; }
+  .empty-state-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.4; }
+  .empty-state p { font-size: 0.9rem; line-height: 1.6; font-family: 'Lato', sans-serif; }
 
   /* Modal */
   .modal-overlay {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(28,20,16,0.6);
+    background: rgba(58,46,40,0.5);
     z-index: 100;
     align-items: center;
     justify-content: center;
@@ -373,12 +315,14 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    background: var(--header-bg);
   }
   .modal-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.4rem;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
     font-weight: 600;
-    color: var(--burgundy-deep);
+    font-style: italic;
+    color: var(--rose-gold);
   }
   .modal-close {
     background: none; border: none; cursor: pointer;
@@ -394,8 +338,8 @@
     border: 1px solid var(--border);
   }
   .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem 1.5rem; }
-  .modal-field label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); font-weight: 500; display: block; margin-bottom: 2px; }
-  .modal-field p { font-size: 0.9rem; color: var(--ink); }
+  .modal-field label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); font-weight: 400; display: block; margin-bottom: 2px; font-family: 'Lato', sans-serif; }
+  .modal-field p { font-size: 0.9rem; color: var(--ink); font-family: 'Lato', sans-serif; }
   .modal-field.full { grid-column: span 2; }
   .modal-actions {
     padding: 1rem 1.5rem;
@@ -412,7 +356,7 @@
     border-radius: 6px;
     font-size: 0.82rem;
     cursor: pointer;
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Lato', sans-serif;
     transition: all 0.15s;
   }
   .btn-delete:hover { background: #fef2f2; }
@@ -421,7 +365,7 @@
     position: fixed;
     bottom: 2rem;
     right: 2rem;
-    background: var(--burgundy-deep);
+    background: var(--ink);
     color: #fff;
     padding: 0.75rem 1.25rem;
     border-radius: 8px;
@@ -431,6 +375,7 @@
     transform: translateY(10px);
     transition: all 0.3s;
     pointer-events: none;
+    font-family: 'Lato', sans-serif;
   }
   .toast.show { opacity: 1; transform: translateY(0); }
 
@@ -439,30 +384,26 @@
     border-top: 1px solid var(--border);
     margin: 0.75rem 0;
   }
+
+  .form-group label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.3rem;
+    font-family: 'Lato', sans-serif;
+  }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="logo">My <span>Wine</span></div>
-  <div class="header-stats">
-    <div class="stat-item"><span class="stat-num" id="s-total">0</span>總計</div>
-    <div class="stat-item"><span class="stat-num" id="s-red">0</span>紅酒</div>
-    <div class="stat-item"><span class="stat-num" id="s-white">0</span>白酒</div>
-  </div>
+  <div class="logo">My Wine</div>
 </header>
 
 <div class="main">
-  <!-- Cellar -->
-  <div class="cellar-header" style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:1rem">
-    <div class="filter-bar">
-      <button class="filter-btn active" data-filter="全部">全部</button>
-      <button class="filter-btn" data-filter="紅酒">紅酒</button>
-      <button class="filter-btn" data-filter="白酒">白酒</button>
-      <button class="filter-btn" data-filter="粉紅酒">粉紅酒</button>
-      <button class="filter-btn" data-filter="氣泡酒">氣泡酒</button>
-    </div>
-  </div>
   <div class="wine-grid" id="wineGrid">
     <div class="empty-state">
       <div class="empty-state-icon">🍾</div>
@@ -621,7 +562,6 @@ const storage = getStorage(app);
 
 let currentFile1 = null;
 let currentFile2 = null;
-let currentFilter = '全部';
 let wines = [];
 let modalWineId = null;
 
@@ -798,7 +738,6 @@ async function loadWines() {
   const snap = await getDocs(q);
   wines = snap.docs.map(d => ({ id: d.id, ...d.data() }));
   renderWines();
-  updateStats();
 }
 
 function countryFlag(country) {
@@ -813,15 +752,14 @@ function countryFlag(country) {
 }
 
 function renderWines() {
-  const filtered = currentFilter === '全部' ? wines : wines.filter(w => w.type === currentFilter);
   const grid = document.getElementById('wineGrid');
 
-  if (!filtered.length) {
-    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">🍾</div><p>${currentFilter === '全部' ? '酒窖尚無藏酒<br>上傳酒標開始建檔' : '這個類型尚無藏酒'}</p></div>`;
+  if (!wines.length) {
+    grid.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🍾</div><p>酒窖尚無藏酒<br>點右下角 ＋ 開始建檔</p></div>`;
     return;
   }
 
-  grid.innerHTML = filtered.map(w => {
+  grid.innerHTML = wines.map(w => {
     const badgeClass = {'紅酒':'badge-red','白酒':'badge-white','粉紅酒':'badge-rose','氣泡酒':'badge-sparkling'}[w.type] || 'badge-red';
     const imgHtml = w.imageUrl
       ? `<div class="card-img"><img src="${w.imageUrl}" alt="${esc(w.name)}" loading="lazy"></div>`
@@ -837,27 +775,11 @@ function renderWines() {
           ${w.country ? `<span style="font-size:1rem">${countryFlag(w.country)}</span>` : ''}
         </div>
         ${w.region ? `<div class="card-region">${esc(w.region)}</div>` : ''}
-        ${w.price ? `<div class="card-price" style="font-size:0.75rem;color:var(--muted);margin-top:4px">NT$ ${esc(w.price)}</div>` : ''}
+        ${w.price ? `<div class="card-price" style="font-size:0.75rem;color:var(--muted);margin-top:4px;font-family:'Lato',sans-serif">NT$ ${esc(w.price)}</div>` : ''}
       </div>
     </div>`;
   }).join('');
 }
-
-function updateStats() {
-  document.getElementById('s-total').textContent = wines.length;
-  document.getElementById('s-red').textContent = wines.filter(w => w.type === '紅酒').length;
-  document.getElementById('s-white').textContent = wines.filter(w => w.type === '白酒').length;
-}
-
-// Filter
-document.querySelectorAll('.filter-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    currentFilter = btn.dataset.filter;
-    renderWines();
-  });
-});
 
 // Add wine modal
 window.openAddModal = function() {
