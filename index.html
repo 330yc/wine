@@ -56,34 +56,39 @@
   .stat-num { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; color: var(--gold-light); display: block; line-height: 1; margin-bottom: 2px; }
 
   /* Layout */
-  .main { display: grid; grid-template-columns: 340px 1fr; min-height: calc(100vh - 90px); }
+  .main { padding: 1.5rem 2rem; min-height: calc(100vh - 90px); }
 
   @media (max-width: 768px) {
-    .main { grid-template-columns: 1fr; }
-    header { padding: 1.25rem 1.25rem; }
+    header { padding: 1.25rem; }
     .logo { font-size: 1.6rem; }
-    .cellar { padding: 1rem; }
-    .sidebar { border-right: none; border-bottom: 1px solid var(--border); }
+    .main { padding: 1rem; }
   }
 
-  /* Sidebar */
-  .sidebar {
-    background: var(--parchment);
-    border-right: 1px solid var(--border);
-    padding: 1.5rem;
-    overflow-y: auto;
+  /* FAB */
+  .fab {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--burgundy);
+    border: none;
+    color: #fff;
+    font-size: 1.6rem;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(74,16,25,0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, transform 0.15s;
+    z-index: 50;
+    line-height: 1;
   }
-  .sidebar-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--burgundy);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    margin-bottom: 1rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid var(--border);
-  }
+  .fab:hover { background: var(--burgundy-deep); transform: scale(1.08); }
+
+  /* Add wine modal form styles */
+  .add-modal-body { padding: 1.25rem 1.5rem; }
 
   /* Upload zone */
   .upload-zone {
@@ -448,124 +453,132 @@
 </header>
 
 <div class="main">
-  <!-- Sidebar: add wine -->
-  <aside class="sidebar">
-    <div class="sidebar-title">新增酒款</div>
-
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:0.5rem">
-      <div>
-        <div style="font-size:0.68rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:0.3rem">正面</div>
-        <div class="upload-zone" id="uploadZone1" style="margin-bottom:0;padding:1rem 0.5rem">
-          <input type="file" accept="image/*" id="fileInput1">
-          <div class="upload-icon" style="font-size:1.4rem;margin-bottom:0.3rem">🍷</div>
-          <div class="upload-label" style="font-size:0.75rem">點擊上傳</div>
-        </div>
-        <div id="previewWrap1" style="display:none;margin-top:0.4rem">
-          <img id="previewImg1" class="preview-img" src="" alt="正面預覽" style="max-height:120px">
-        </div>
-      </div>
-      <div>
-        <div style="font-size:0.68rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:0.3rem">背面</div>
-        <div class="upload-zone" id="uploadZone2" style="margin-bottom:0;padding:1rem 0.5rem">
-          <input type="file" accept="image/*" id="fileInput2">
-          <div class="upload-icon" style="font-size:1.4rem;margin-bottom:0.3rem">📋</div>
-          <div class="upload-label" style="font-size:0.75rem">點擊上傳</div>
-        </div>
-        <div id="previewWrap2" style="display:none;margin-top:0.4rem">
-          <img id="previewImg2" class="preview-img" src="" alt="背面預覽" style="max-height:120px">
-        </div>
-      </div>
-    </div>
-
-    <button class="btn-analyze" id="analyzeBtn" disabled>✦ AI 辨識酒標</button>
-    <div class="analyzing-bar" id="analyzingBar">
-      辨識中<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>
-    </div>
-
-    <hr class="divider">
-
-    <div class="form-row">
-      <div class="form-group">
-        <label>類型</label>
-        <select id="f-type">
-          <option value="紅酒">紅酒</option>
-          <option value="白酒">白酒</option>
-          <option value="粉紅酒">粉紅酒</option>
-          <option value="氣泡酒">氣泡酒</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>年份</label>
-        <input type="text" id="f-vintage" placeholder="例：2019">
-      </div>
-    </div>
-    <div class="form-group">
-      <label>酒名</label>
-      <input type="text" id="f-name" placeholder="AI 辨識後自動填入">
-    </div>
-    <div class="form-group">
-      <label>酒莊</label>
-      <input type="text" id="f-winery" placeholder="AI 辨識後自動填入">
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label>國家</label>
-        <input type="text" id="f-country" placeholder="例：法國">
-      </div>
-      <div class="form-group">
-        <label>酒精度</label>
-        <input type="text" id="f-alcohol" placeholder="例：13.5%">
-      </div>
-    </div>
-    <div class="form-group">
-      <label>產區</label>
-      <input type="text" id="f-region" placeholder="AI 辨識後自動填入">
-    </div>
-    <div class="form-group">
-      <label>葡萄品種</label>
-      <input type="text" id="f-grape" placeholder="AI 辨識後自動填入">
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label>參考價格（NT$）</label>
-        <input type="text" id="f-price" placeholder="例：1800">
-      </div>
-      <div class="form-group">
-        <label>開瓶日期</label>
-        <input type="date" id="f-opened">
-      </div>
-    </div>
-    <div class="form-group">
-      <label>飲用心得</label>
-      <textarea id="f-tasting" placeholder="開瓶後的感受、搭餐心得..."></textarea>
-    </div>
-    <div class="form-group">
-      <label>釀造特色 / 備注</label>
-      <textarea id="f-notes" placeholder="橡木桶陳 16 個月、純素..."></textarea>
-    </div>
-
-    <button class="btn-save" id="saveBtn">加入酒窖</button>
-  </aside>
-
   <!-- Cellar -->
-  <section class="cellar">
-    <div class="cellar-header">
-      <div></div>
-      <div class="filter-bar">
-        <button class="filter-btn active" data-filter="全部">全部</button>
-        <button class="filter-btn" data-filter="紅酒">紅酒</button>
-        <button class="filter-btn" data-filter="白酒">白酒</button>
-        <button class="filter-btn" data-filter="粉紅酒">粉紅酒</button>
-        <button class="filter-btn" data-filter="氣泡酒">氣泡酒</button>
+  <div class="cellar-header" style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:1rem">
+    <div class="filter-bar">
+      <button class="filter-btn active" data-filter="全部">全部</button>
+      <button class="filter-btn" data-filter="紅酒">紅酒</button>
+      <button class="filter-btn" data-filter="白酒">白酒</button>
+      <button class="filter-btn" data-filter="粉紅酒">粉紅酒</button>
+      <button class="filter-btn" data-filter="氣泡酒">氣泡酒</button>
+    </div>
+  </div>
+  <div class="wine-grid" id="wineGrid">
+    <div class="empty-state">
+      <div class="empty-state-icon">🍾</div>
+      <p>酒窖尚無藏酒<br>點右下角 ＋ 開始建檔</p>
+    </div>
+  </div>
+</div>
+
+<!-- FAB -->
+<button class="fab" onclick="openAddModal()">＋</button>
+
+<!-- Add Wine Modal -->
+<div class="modal-overlay" id="addModalOverlay">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-header">
+      <div class="modal-title">新增酒款</div>
+      <button class="modal-close" onclick="closeAddModal()">✕</button>
+    </div>
+    <div class="add-modal-body" style="overflow-y:auto;max-height:75vh">
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:0.75rem">
+        <div>
+          <div style="font-size:0.68rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:0.3rem">正面</div>
+          <div class="upload-zone" id="uploadZone1" style="margin-bottom:0;padding:1rem 0.5rem">
+            <input type="file" accept="image/*" id="fileInput1">
+            <div class="upload-icon" style="font-size:1.4rem;margin-bottom:0.3rem">🍷</div>
+            <div class="upload-label" style="font-size:0.75rem">點擊上傳</div>
+          </div>
+          <div id="previewWrap1" style="display:none;margin-top:0.4rem">
+            <img id="previewImg1" class="preview-img" src="" alt="正面預覽" style="max-height:100px;width:100%;object-fit:contain">
+          </div>
+        </div>
+        <div>
+          <div style="font-size:0.68rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:0.3rem">背面</div>
+          <div class="upload-zone" id="uploadZone2" style="margin-bottom:0;padding:1rem 0.5rem">
+            <input type="file" accept="image/*" id="fileInput2">
+            <div class="upload-icon" style="font-size:1.4rem;margin-bottom:0.3rem">📋</div>
+            <div class="upload-label" style="font-size:0.75rem">點擊上傳</div>
+          </div>
+          <div id="previewWrap2" style="display:none;margin-top:0.4rem">
+            <img id="previewImg2" class="preview-img" src="" alt="背面預覽" style="max-height:100px;width:100%;object-fit:contain">
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-analyze" id="analyzeBtn" disabled>✦ AI 辨識酒標</button>
+      <div class="analyzing-bar" id="analyzingBar">
+        辨識中<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>
+      </div>
+
+      <hr class="divider">
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>類型</label>
+          <select id="f-type">
+            <option value="紅酒">紅酒</option>
+            <option value="白酒">白酒</option>
+            <option value="粉紅酒">粉紅酒</option>
+            <option value="氣泡酒">氣泡酒</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>年份</label>
+          <input type="text" id="f-vintage" placeholder="例：2019">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>酒名</label>
+        <input type="text" id="f-name" placeholder="AI 辨識後自動填入">
+      </div>
+      <div class="form-group">
+        <label>酒莊</label>
+        <input type="text" id="f-winery" placeholder="AI 辨識後自動填入">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>國家</label>
+          <input type="text" id="f-country" placeholder="例：法國">
+        </div>
+        <div class="form-group">
+          <label>酒精度</label>
+          <input type="text" id="f-alcohol" placeholder="例：13.5%">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>產區</label>
+        <input type="text" id="f-region" placeholder="AI 辨識後自動填入">
+      </div>
+      <div class="form-group">
+        <label>葡萄品種</label>
+        <input type="text" id="f-grape" placeholder="AI 辨識後自動填入">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>參考價格（NT$）</label>
+          <input type="text" id="f-price" placeholder="例：1800">
+        </div>
+        <div class="form-group">
+          <label>開瓶日期</label>
+          <input type="date" id="f-opened">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>飲用心得</label>
+        <textarea id="f-tasting" placeholder="開瓶後的感受、搭餐心得..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>釀造特色 / 備注</label>
+        <textarea id="f-notes" placeholder="橡木桶陳 16 個月、純素..."></textarea>
       </div>
     </div>
-    <div class="wine-grid" id="wineGrid">
-      <div class="empty-state" style="grid-column:1/-1">
-        <div class="empty-state-icon">🍾</div>
-        <p>酒窖尚無藏酒<br>上傳酒標開始建檔</p>
-      </div>
+    <div class="modal-actions">
+      <button class="btn-save" id="saveBtn">加入酒窖</button>
     </div>
-  </section>
+  </div>
 </div>
 
 <!-- Detail Modal -->
@@ -754,6 +767,7 @@ document.getElementById('saveBtn').addEventListener('click', async () => {
 
     await addDoc(collection(db, 'wines'), wine);
     showToast('已加入酒窖 🍷');
+    closeAddModal();
     resetForm();
     loadWines();
   } catch(e) {
@@ -845,7 +859,18 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
   });
 });
 
-// Modal
+// Add wine modal
+window.openAddModal = function() {
+  document.getElementById('addModalOverlay').classList.add('open');
+};
+window.closeAddModal = function() {
+  document.getElementById('addModalOverlay').classList.remove('open');
+};
+document.getElementById('addModalOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('addModalOverlay')) closeAddModal();
+});
+
+// Detail Modal
 window.openModal = function(id) {
   const w = wines.find(w => w.id === id);
   if (!w) return;
