@@ -207,16 +207,14 @@
     display: flex;
     gap: 14px;
     align-items: flex-start;
-    padding: 14px 0;
+    padding: 0 0 0 0;
     border-bottom: 0.5px solid var(--border);
     cursor: pointer;
     transition: background 0.15s;
   }
   .wine-card:first-child { border-top: 0.5px solid var(--border); }
-  .wine-card:hover { background: #FDF9F6; margin: 0 -2rem; padding: 14px 2rem; }
-  @media (max-width: 768px) {
-    .wine-card:hover { margin: 0 -1rem; padding: 14px 1rem; }
-  }
+  .wine-card:hover { background: #FDF9F6; }
+  @media (max-width: 768px) { }
   @keyframes fadeUp { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
 
   .card-img {
@@ -246,13 +244,15 @@
   }
 
   .card-body {
-    padding: 0.75rem 1rem;
+    padding: 0.6rem 1rem 0.75rem;
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 10px;
     min-width: 0;
+    justify-content: flex-start;
   }
+  .wine-card:nth-child(even) { background: #FDFAF7; }
   .card-row1 {
     display: grid;
     grid-template-columns: minmax(0, 1.2fr) auto auto auto;
@@ -915,9 +915,9 @@ function renderWines() {
       : `<div class="card-img-placeholder">🍷</div>`;
     const flag = w.country ? countryFlag(w.country) : '';
     return `<div class="wine-card" onclick="openModal('${w.id}')">
-      <div style="display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0;padding-top:0.6rem;padding-bottom:0.75rem;padding-left:0">
         ${imgHtml}
-        ${w.price ? `<span class="badge badge-year" style="font-size:0.6rem">NT$ ${esc(w.price)}</span>` : ''}
+        <span class="badge badge-year" style="font-size:0.6rem;min-width:64px;text-align:center;display:inline-block">${w.price ? 'NT$ ' + Number(w.price).toLocaleString() : '—'}</span>
       </div>
       <div class="card-body">
         <div class="card-row1">
