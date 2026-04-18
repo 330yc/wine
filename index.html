@@ -607,14 +607,6 @@
           <label>參考價格（NT$）</label>
           <input type="text" id="f-price" placeholder="例：1800">
         </div>
-        <div class="form-group">
-          <label>開瓶日期</label>
-          <input type="date" id="f-opened">
-        </div>
-      </div>
-      <div class="form-group">
-        <label>飲用心得</label>
-        <textarea id="f-tasting" placeholder="開瓶後的感受、搭餐心得..."></textarea>
       </div>
       <div class="form-group">
         <label>釀造特色 / 備注</label>
@@ -622,7 +614,7 @@
       </div>
     </div>
     <div class="modal-actions">
-      <button class="btn-save" id="saveBtn">加入酒窖</button>
+      <button class="btn-save" id="saveBtn">Add</button>
     </div>
   </div>
 </div>
@@ -829,7 +821,7 @@ document.getElementById('saveBtn').addEventListener('click', async () => {
   if (!name) { showToast('請至少填入酒名'); return; }
 
   document.getElementById('saveBtn').disabled = true;
-  document.getElementById('saveBtn').textContent = '儲存中…';
+  document.getElementById('saveBtn').textContent = 'Adding…';
 
   try {
     let imageUrl = '';
@@ -853,8 +845,7 @@ document.getElementById('saveBtn').addEventListener('click', async () => {
       grape: document.getElementById('f-grape').value,
       alcohol: document.getElementById('f-alcohol').value,
       price: document.getElementById('f-price').value,
-      opened: document.getElementById('f-opened').value,
-      tasting: document.getElementById('f-tasting').value,
+      tasting: '',
       notes: document.getElementById('f-notes').value,
       drunk: false,
       imageUrl,
@@ -872,11 +863,11 @@ document.getElementById('saveBtn').addEventListener('click', async () => {
   }
 
   document.getElementById('saveBtn').disabled = false;
-  document.getElementById('saveBtn').textContent = '加入酒窖';
+  document.getElementById('saveBtn').textContent = 'Add';
 });
 
 function resetForm() {
-  ['f-name','f-winery','f-vintage','f-country','f-region','f-grape','f-alcohol','f-price','f-notes','f-opened','f-tasting'].forEach(id => {
+  ['f-name','f-winery','f-vintage','f-country','f-region','f-grape','f-alcohol','f-price','f-notes'].forEach(id => {
     document.getElementById(id).value = '';
   });
   document.getElementById('f-type').value = '紅酒';
