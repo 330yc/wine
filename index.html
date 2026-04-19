@@ -614,7 +614,7 @@
       </div>
     </div>
     <div class="modal-actions">
-      <button class="btn-save" id="saveBtn">Add</button>
+      <button class="btn-save" id="saveBtn">Save</button>
     </div>
   </div>
 </div>
@@ -685,15 +685,11 @@
       </div>
       <div class="form-group"><label>產區</label><input type="text" id="e-region"></div>
       <div class="form-group"><label>葡萄品種</label><input type="text" id="e-grape"></div>
-      <div class="form-row">
-        <div class="form-group"><label>參考價格（NT$）</label><input type="text" id="e-price"></div>
-        <div class="form-group"><label>開瓶日期</label><input type="date" id="e-opened"></div>
-      </div>
-      <div class="form-group"><label>飲用心得</label><textarea id="e-tasting"></textarea></div>
+      <div class="form-group"><label>參考價格（NT$）</label><input type="text" id="e-price"></div>
       <div class="form-group"><label>釀造特色 / 備注</label><textarea id="e-notes"></textarea></div>
     </div>
     <div class="modal-actions">
-      <button class="btn-save" id="updateBtn">儲存修改</button>
+      <button class="btn-save" id="updateBtn">Save</button>
     </div>
   </div>
 </div>
@@ -821,7 +817,7 @@ document.getElementById('saveBtn').addEventListener('click', async () => {
   if (!name) { showToast('請至少填入酒名'); return; }
 
   document.getElementById('saveBtn').disabled = true;
-  document.getElementById('saveBtn').textContent = 'Adding…';
+  document.getElementById('saveBtn').textContent = 'Saving…';
 
   try {
     let imageUrl = '';
@@ -863,7 +859,7 @@ document.getElementById('saveBtn').addEventListener('click', async () => {
   }
 
   document.getElementById('saveBtn').disabled = false;
-  document.getElementById('saveBtn').textContent = 'Add';
+  document.getElementById('saveBtn').textContent = 'Save';
 });
 
 function resetForm() {
@@ -1107,7 +1103,7 @@ document.getElementById('editModalOverlay').addEventListener('click', e => {
 document.getElementById('updateBtn').addEventListener('click', async () => {
   if (!modalWineId) return;
   document.getElementById('updateBtn').disabled = true;
-  document.getElementById('updateBtn').textContent = '儲存中…';
+  document.getElementById('updateBtn').textContent = 'Saving…';
   try {
     const updates = {
       name: document.getElementById('e-name').value,
@@ -1119,8 +1115,6 @@ document.getElementById('updateBtn').addEventListener('click', async () => {
       grape: document.getElementById('e-grape').value,
       alcohol: document.getElementById('e-alcohol').value,
       price: document.getElementById('e-price').value,
-      opened: document.getElementById('e-opened').value,
-      tasting: document.getElementById('e-tasting').value,
       notes: document.getElementById('e-notes').value,
     };
     await updateDoc(doc(db, 'wines', modalWineId), updates);
@@ -1129,7 +1123,7 @@ document.getElementById('updateBtn').addEventListener('click', async () => {
     loadWines();
   } catch(e) { showToast('儲存失敗'); }
   document.getElementById('updateBtn').disabled = false;
-  document.getElementById('updateBtn').textContent = '儲存修改';
+  document.getElementById('updateBtn').textContent = 'Save';
 });
 
 document.getElementById('deleteBtn').addEventListener('click', async () => {
