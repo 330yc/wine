@@ -959,7 +959,9 @@ function renderWines() {
   }
 
   grid.innerHTML = filtered.map(w => {
-    const badgeClass = {'紅酒':'badge-red','白酒':'badge-white','粉紅':'badge-rose','氣泡':'badge-sparkling'}[w.type] || 'badge-red';
+    const typeMap = {'紅酒':'badge-red','白酒':'badge-white','粉紅':'badge-rose','粉紅酒':'badge-rose','氣泡':'badge-sparkling','氣泡酒':'badge-sparkling'};
+    const badgeClass = typeMap[w.type] || 'badge-red';
+    const displayType = w.type === '粉紅酒' ? '粉紅' : w.type === '氣泡酒' ? '氣泡' : w.type;
     const imgHtml = w.imageUrl
       ? `<div class="card-img"><img src="${w.imageUrl}" alt="${esc(w.name)}" loading="lazy"></div>`
       : `<div class="card-img-placeholder">🍷</div>`;
@@ -972,7 +974,7 @@ function renderWines() {
       <div class="card-body">
         <div class="card-row1">
           <div class="card-name">${esc(titleCase(w.name))}</div>
-          <span class="badge ${badgeClass}">${esc(w.type)}</span>
+          <span class="badge ${badgeClass}">${esc(displayType)}</span>
           ${w.vintage ? `<span class="badge badge-year">${esc(w.vintage)}</span>` : ''}
           ${w.alcohol ? formatAlcBadge(w.alcohol) : ''}
         </div>
