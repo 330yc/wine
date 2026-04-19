@@ -317,7 +317,12 @@
   .badge-rose { background: #FCEEF3; color: #8B3052; }
   .badge-sparkling { background: #E8F2FB; color: #1A5F8A; }
   .badge-year { background: var(--thumb-bg); color: var(--muted); }
-  .badge-alc { background: #F0EBF8; color: #7A5A9A; }
+  .badge-alc {
+    background: #F0EBF8; color: #7A5A9A;
+    width: 52px; text-align: right;
+    display: inline-block; padding: 3px 6px;
+    font-variant-numeric: tabular-nums;
+  }
 
   /* Empty state */
   .empty-state {
@@ -590,7 +595,7 @@
           <input type="text" id="f-country" placeholder="例：法國">
         </div>
         <div class="form-group">
-          <label>酒精度</label>
+          <label>Alcohol By Volume</label>
           <input type="text" id="f-alcohol" placeholder="例：13.5%">
         </div>
       </div>
@@ -681,7 +686,7 @@
       <div class="form-group"><label>酒莊</label><input type="text" id="e-winery"></div>
       <div class="form-row">
         <div class="form-group"><label>國家</label><input type="text" id="e-country"></div>
-        <div class="form-group"><label>酒精度</label><input type="text" id="e-alcohol"></div>
+        <div class="form-group"><label>Alcohol By Volume</label><input type="text" id="e-alcohol"></div>
       </div>
       <div class="form-group"><label>產區</label><input type="text" id="e-region"></div>
       <div class="form-group"><label>葡萄品種</label><input type="text" id="e-grape"></div>
@@ -882,6 +887,13 @@ async function loadWines() {
   renderWines();
 }
 
+function formatAlc(val) {
+  if (!val) return '';
+  const num = parseFloat(String(val).replace(/[^0-9.]/g, ''));
+  if (isNaN(num)) return val;
+  return num.toFixed(1) + '%';
+}
+
 function titleCase(str) {
   if (!str) return '';
   return str.toLowerCase().replace(/(?:^|\s|[-\/·、])\S/g, c => c.toUpperCase());
@@ -936,7 +948,7 @@ function renderWines() {
           <div class="card-name">${esc(titleCase(w.name))}</div>
           <span class="badge ${badgeClass}">${esc(w.type)}</span>
           ${w.vintage ? `<span class="badge badge-year">${esc(w.vintage)}</span>` : ''}
-          ${w.alcohol ? `<span class="badge badge-alc">${esc(w.alcohol)}</span>` : ''}
+          ${w.alcohol ? `<span class="badge badge-alc">${formatAlc(w.alcohol)}</span>` : ''}
         </div>
         <div class="card-row2">
           <div style="font-size:16px;line-height:1">${flag}</div>
@@ -990,7 +1002,7 @@ window.openModal = function(id) {
     ${mf('類型', w.type)} ${mf('國家', w.country ? countryFlag(w.country) + ' ' + w.country : '')}
     ${mf('產區', titleCase(w.region), true)}
     ${mf('葡萄品種', titleCase(w.grape), true)}
-    ${mf('酒精濃度', w.alcohol)} ${mf('參考價格', w.price ? 'NT$ ' + w.price : '')}
+    ${mf('Alcohol By Volume', formatAlc(w.alcohol))} ${mf('參考價格', w.price ? 'NT$ ' + Number(w.price).toLocaleString() : '')}
     ${mf('開瓶日期', w.opened)}
     ${mf('釀造特色', w.notes, true)}
     ${mf('飲用心得', w.tasting, true)}
