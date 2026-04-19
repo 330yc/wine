@@ -589,8 +589,8 @@
           <select id="f-type">
             <option value="紅酒">紅酒</option>
             <option value="白酒">白酒</option>
-            <option value="粉紅酒">粉紅酒</option>
-            <option value="氣泡酒">氣泡酒</option>
+            <option value="粉紅">粉紅</option>
+            <option value="氣泡">氣泡</option>
           </select>
         </div>
         <div class="form-group">
@@ -693,8 +693,8 @@
           <select id="e-type">
             <option value="紅酒">紅酒</option>
             <option value="白酒">白酒</option>
-            <option value="粉紅酒">粉紅酒</option>
-            <option value="氣泡酒">氣泡酒</option>
+            <option value="粉紅">粉紅</option>
+            <option value="氣泡">氣泡</option>
           </select>
         </div>
         <div class="form-group"><label>年份</label><input type="text" id="e-vintage"></div>
@@ -959,7 +959,7 @@ function renderWines() {
   }
 
   grid.innerHTML = filtered.map(w => {
-    const badgeClass = {'紅酒':'badge-red','白酒':'badge-white','粉紅酒':'badge-rose','氣泡酒':'badge-sparkling'}[w.type] || 'badge-red';
+    const badgeClass = {'紅酒':'badge-red','白酒':'badge-white','粉紅':'badge-rose','氣泡':'badge-sparkling'}[w.type] || 'badge-red';
     const imgHtml = w.imageUrl
       ? `<div class="card-img"><img src="${w.imageUrl}" alt="${esc(w.name)}" loading="lazy"></div>`
       : `<div class="card-img-placeholder">🍷</div>`;
